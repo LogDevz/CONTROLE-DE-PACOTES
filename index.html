@@ -106,12 +106,19 @@ tr.sel td{background:#dbe9fd!important}
 .hbw{display:flex;align-items:center;gap:14px}
 .hb{width:42px;height:42px;border-radius:10px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none;padding:0}
 .hb:hover,.hb:focus-visible{background:rgba(255,255,255,.22);outline:none}
-.hb svg{width:22px;height:22px;stroke:#fff;stroke-width:2.2;stroke-linecap:round;fill:none}
+.hb svg{width:22px;height:22px;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;fill:none}
 .tabs{position:fixed;left:0;top:0;bottom:0;width:min(300px,84vw);flex-direction:column;gap:4px;overflow:auto;padding:0 12px 16px;z-index:60;border-right:1px solid var(--line);box-shadow:8px 0 30px rgba(0,0,0,.25);transform:translateX(-104%);visibility:hidden;transition:transform .22s ease,visibility 0s .22s}
 .tabs.open{transform:none;visibility:visible;transition:transform .22s ease}
-.tabs .th{display:flex;align-items:center;justify-content:space-between;margin:0 -12px 10px;padding:16px 18px;background:var(--pri);color:#fff;border-bottom:4px solid var(--acc);font-weight:800}
-.tabs .th button{background:transparent;border:0;color:#fff;font-size:1.5rem;line-height:1;cursor:pointer;padding:0 4px}
-.tabs .tl{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);padding:10px 8px 4px}
+.tabs .th{display:flex;align-items:center;justify-content:flex-start;padding:12px 0 8px}
+.tabs .th button{width:42px;height:42px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;padding:0}
+.tabs .th button:hover,.tabs .th button:focus-visible{background:#e8f0fb;outline:none}
+.tabs .th svg{width:22px;height:22px;stroke:var(--pri);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.tabs .tl{font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);padding:12px 14px;border-radius:8px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;user-select:none}
+.tabs .tl::-webkit-details-marker{display:none}
+.tabs .tl::after{content:'›';font-size:1.2rem;line-height:1;transition:transform .18s}
+.tabs details[open]>.tl::after{transform:rotate(90deg)}
+.tabs .tl:hover,.tabs .tl:focus-visible{background:#e8f0fb;outline:none}
+.tabs .gi{display:grid;gap:4px;padding:2px 0 6px}
 .tabs .tb{text-align:left;width:100%;padding:12px 14px;font-size:.95rem}
 .tabs .tb.on{box-shadow:inset 4px 0 0 var(--acc)}
 #ov{position:fixed;inset:0;background:rgba(8,24,52,.5);z-index:55}
@@ -120,7 +127,6 @@ tr.sel td{background:#dbe9fd!important}
 .tabs .ta{font:inherit;font-size:.95rem;font-weight:700;text-align:left;width:100%;border:0;background:transparent;color:var(--ink);border-radius:8px;padding:12px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
 .tabs .ta:hover,.tabs .ta:focus-visible{background:#e8f0fb;outline:none}
 .tabs .ta i{font-style:normal;color:var(--mut);font-weight:400}
-.tabs .ta.dg{color:#c62828;margin-top:6px;border-top:1px solid var(--line);border-radius:0 0 8px 8px}
 .so{display:grid;gap:6px;margin:6px 0 10px}
 .orow{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:10px;cursor:pointer;background:#fff}
 .orow:hover{background:#f3f8fe}
@@ -149,7 +155,7 @@ body.semvalor .cv{display:none}
 <body>
 <header>
   <div class="hbw">
-    <button class="hb" id="hb" type="button" aria-label="Abrir menu de abas" aria-expanded="false" aria-controls="tabsnav"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+    <button class="hb" id="hb" type="button" aria-label="Abrir menu lateral" title="Abrir menu lateral" aria-expanded="false" aria-controls="tabsnav"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg></button>
     <div><h1>Controle de Pacotes</h1><small>Dashboard operacional · <b id="abanome">Visão geral</b></small></div>
   </div>
   <div class="bar">
@@ -173,24 +179,25 @@ body.semvalor .cv{display:none}
     <p class="smd" id="smd"></p>
     <div class="so" id="smo"></div>
     <p class="smd" id="smn"></p>
-    <div class="mf"><button class="btn" id="smc" type="button">Cancelar</button><button class="btn p" id="smok" type="button"></button></div>
+    <div class="mf"><button class="btn" id="smlimpa" type="button" hidden style="color:#c62828;margin-right:auto">Limpar todos os dados</button><button class="btn" id="smc" type="button">Cancelar</button><button class="btn p" id="smok" type="button"></button></div>
   </div>
 </div>
 <input type="file" id="fsel" accept=".xlsx,.xls,.csv" hidden>
 <nav class="tabs" id="tabsnav" role="tablist" aria-label="Abas do Dashboard">
-  <div class="th"><span>Abas</span><button type="button" id="hbx" aria-label="Fechar menu">×</button></div>
+  <div class="th"><button type="button" id="hbx" aria-label="Fechar menu lateral" title="Fechar menu lateral"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg></button></div>
   <button class="tb on" id="tbg" role="tab" aria-selected="true" data-tab="geral">Visão geral</button>
-  <div class="tl">Conferência</div>
+  <details class="gv" open><summary class="tl">Conferência</summary><div class="gi">
   <button class="tb" id="tbf" role="tab" aria-selected="false" data-tab="falt">Faltantes (<span id="tbn">0</span>)</button>
   <button class="tb" id="tba" role="tab" aria-selected="false" data-tab="avar">Avarias (<span id="tbna">0</span>)</button>
   <button class="tb" id="tbp" role="tab" aria-selected="false" data-tab="fis">Físico (<span id="tbnp">0</span>)</button>
   <button class="tb" id="tbs" role="tab" aria-selected="false" data-tab="sist">Sistêmica (<span id="tbns">0</span>)</button>
   <button class="tb" id="tbd" role="tab" aria-selected="false" data-tab="desc">Desconteinerizado (<span id="tbnd">0</span>)</button>
-  <div class="tl">Ações</div>
+  </div></details>
+  <details class="gv"><summary class="tl">Ações</summary><div class="gi">
   <button class="ta" id="acl" type="button">Carregar arquivo <i>›</i></button>
   <button class="ta" id="ace" type="button">Exportar relatório em Excel <i>›</i></button>
   <button class="ta" id="acp" type="button">Baixar relatório PDF <i>›</i></button>
-  <button class="ta dg" id="acx" type="button">Limpar dados</button>
+  </div></details>
 </nav>
 <main>
  <div class="pane" id="pg">
@@ -1269,7 +1276,7 @@ const CARGAS=[['auto','Detectar automaticamente','Recomendado: o Dashboard ident
 function contaAba(k){const v=view();return{geral:v.ret.length+v.mais.length,falt:v.falt.length,avar:v.avar.length,fis:CUR.fis.length,sist:CUR.sis.length,desc:DESC.length}[k]}
 let SMT='';
 function smAbrir(tipo){
-  SMT=tipo;const o=$('#smo');
+  SMT=tipo;const o=$('#smo');$('#smlimpa').hidden=tipo!=='load';
   if(tipo==='load'){
     $('#smt').textContent='Carregar arquivo';$('#smd').textContent='Escolha para qual aba é o arquivo:';
     o.innerHTML=CARGAS.map((c,i)=>`<label class="orow${i?'':' on'}"><input type="radio" name="sk" value="${c[0]}"${i?'':' checked'}><span><b>${c[1]}</b><small>${c[2]}</small></span><em></em></label>`).join('');
@@ -1305,7 +1312,8 @@ $('#smx').onclick=$('#smc').onclick=smFechar;
 $('#sm').addEventListener('click',e=>{if(e.target===$('#sm'))smFechar()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sm').hidden)smFechar()});
 const acao=f=>()=>{gaveta(false);f()};
-$('#acl').onclick=acao(()=>smAbrir('load'));$('#ace').onclick=acao(()=>smAbrir('xls'));$('#acp').onclick=acao(()=>smAbrir('pdf'));$('#acx').onclick=acao(()=>limparTudo());
+$('#acl').onclick=acao(()=>smAbrir('load'));$('#ace').onclick=acao(()=>smAbrir('xls'));$('#acp').onclick=acao(()=>smAbrir('pdf'));
+$('#smlimpa').onclick=()=>{smFechar();limparTudo()};
 </script>
 </body>
 </html>
