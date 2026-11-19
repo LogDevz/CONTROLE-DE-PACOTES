@@ -137,6 +137,14 @@ tr.sel td{background:#dbe9fd!important}
 .orow em{font-style:normal;font-weight:800;color:var(--pri);font-size:.9rem}
 .orow.all{background:#f2f6fc;font-weight:700}
 .smd{margin:0 0 6px;color:var(--mut);font-size:.88rem}
+.smf{display:flex;flex-direction:column;gap:4px;font-size:.8rem;color:var(--mut);font-weight:600;margin:0 0 10px}
+.smf[hidden]{display:none}
+.smf select,.wm select{font:inherit;font-size:.9rem;border-radius:8px;border:1px solid var(--line);padding:8px 12px;background:#fff;color:var(--ink)}
+.wm label{display:flex;flex-direction:column;gap:4px;font-size:.8rem;color:var(--mut);font-weight:600;margin:0 0 10px}
+.wm input[type=text],.wm input[type=password]{width:100%;font:inherit;font-size:.9rem;border-radius:8px;border:1px solid var(--line);padding:8px 12px;background:#fff;color:var(--ink)}
+.wm textarea{width:100%;min-height:260px;font:inherit;font-size:.92rem;line-height:1.45;border-radius:8px;border:1px solid var(--line);padding:10px 12px;resize:vertical;color:var(--ink)}
+#wmsg{font-size:.85rem;min-height:1.2em;margin:6px 0 10px;color:var(--mut)}
+#wmsg.ok{color:#00864a}#wmsg.bad{color:#e53935}
 body.semrota .tw table:has(#t7) :is(th,td):nth-child(n+5):nth-child(-n+8),body.semrota .tw table:has(#t8) :is(th,td):nth-child(n+6):nth-child(-n+8),body.semrota .tw table:has(#t9) :is(th,td):nth-child(n+4):nth-child(-n+7){display:none}
 body.semvalor .cv{display:none}
 .pre{display:grid;gap:10px;margin:0 0 12px;padding:12px;border:1px solid var(--line);border-radius:10px;background:#f5f9ff}
@@ -177,10 +185,20 @@ body.semvalor .cv{display:none}
   <div class="md" style="max-width:480px">
     <div class="mh"><h2 id="smt"></h2><button class="btn" id="smx" type="button">Fechar</button></div>
     <p class="smd" id="smd"></p>
+    <label class="smf" id="smcw" hidden>Ciclo do relatório<select id="smcic"></select></label>
     <div class="so" id="smo"></div>
     <p class="smd" id="smn"></p>
-    <div class="mf"><button class="btn" id="smlimpa" type="button" hidden style="color:#c62828;margin-right:auto">Limpar todos os dados</button><button class="btn" id="smc" type="button">Cancelar</button><button class="btn p" id="smok" type="button"></button></div>
+    <div class="mf"><button class="btn" id="smlimpa" type="button" hidden style="color:#c62828;margin-right:auto">Limpar todos os dados</button><button class="btn" id="smwa" type="button" hidden>Relatório em texto</button><button class="btn" id="smc" type="button">Cancelar</button><button class="btn p" id="smok" type="button"></button></div>
   </div>
+</div>
+<div class="ov" id="wm" hidden role="dialog" aria-modal="true" aria-labelledby="wmt" style="z-index:80">
+ <div class="md wm" style="max-width:680px">
+  <div class="mh"><h2 id="wmt">Relatório em texto</h2><button class="btn" id="wx" type="button">Fechar</button></div>
+  <label>Ciclo<select id="wc"></select></label>
+  <textarea id="wt" aria-label="Texto do relatório"></textarea>
+  <p id="wmsg" role="status"></p>
+  <div class="mf"><button class="btn" id="wcp" type="button">Copiar</button><button class="btn p" id="wwa" type="button">Abrir no WhatsApp</button></div>
+ </div>
 </div>
 <input type="file" id="fsel" accept=".xlsx,.xls,.csv" hidden>
 <nav class="tabs" id="tabsnav" role="tablist" aria-label="Abas do Dashboard">
@@ -195,8 +213,7 @@ body.semvalor .cv{display:none}
   </div></details>
   <details class="gv"><summary class="tl">Ações</summary><div class="gi">
   <button class="ta" id="acl" type="button">Carregar arquivo <i>›</i></button>
-  <button class="ta" id="ace" type="button">Exportar relatório em Excel <i>›</i></button>
-  <button class="ta" id="acp" type="button">Baixar relatório PDF <i>›</i></button>
+  <button class="ta" id="acp" type="button">Gerar Relatório <i>›</i></button>
   </div></details>
 </nav>
 <main>
@@ -734,7 +751,7 @@ const canonMot=s=>{const k=semAc(s);return k==='nao cabe no veiculo'?'Não cabe 
 const baseAll=()=>[...DATA.ret,...DATA.mais,...(DATA.mov||[])];
 function refreshFc(){
   const cur=$('#fc').value;
-  const cs=[...new Set([...baseAll(),...BIP].map(x=>x.ciclo))].sort();
+  const cs=[...new Set([...cicTodos(),...baseAll(),...BIP].map(x=>x.ciclo))].sort();
   $('#fc').innerHTML='<option value="">Todos os ciclos</option>'+cs.map(c=>`<option>${esc(c)}</option>`).join('');
   if(cs.includes(cur))$('#fc').value=cur;
 }
@@ -1276,16 +1293,17 @@ const CARGAS=[['auto','Detectar automaticamente','Recomendado: o Dashboard ident
 function contaAba(k){const v=view();return{geral:v.ret.length+v.mais.length,falt:v.falt.length,avar:v.avar.length,fis:CUR.fis.length,sist:CUR.sis.length,desc:DESC.length}[k]}
 let SMT='';
 function smAbrir(tipo){
-  SMT=tipo;const o=$('#smo');$('#smlimpa').hidden=tipo!=='load';
+  SMT=tipo;const o=$('#smo');$('#smlimpa').hidden=tipo!=='load';$('#smcw').hidden=tipo==='load';$('#smwa').hidden=tipo!=='pdf';
   if(tipo==='load'){
     $('#smt').textContent='Carregar arquivo';$('#smd').textContent='Escolha para qual aba é o arquivo:';
     o.innerHTML=CARGAS.map((c,i)=>`<label class="orow${i?'':' on'}"><input type="radio" name="sk" value="${c[0]}"${i?'':' checked'}><span><b>${c[1]}</b><small>${c[2]}</small></span><em></em></label>`).join('');
     $('#smn').textContent='Faltantes e Avarias são preenchidos pelo botão Bipar IDs, não por arquivo.';$('#smok').textContent='Escolher arquivo…';
   }else{
     const x=tipo==='xls';
-    $('#smt').textContent=x?'Exportar relatório em Excel':'Baixar relatório PDF';$('#smd').textContent='Escolha as abas que entram no relatório (os filtros ativos continuam valendo):';
+    $('#smt').textContent=x?'Exportar relatório em Excel':'Gerar relatório';$('#smd').textContent='Escolha as abas que entram no relatório (os filtros ativos continuam valendo):';
     o.innerHTML=`<label class="orow all on"><input type="checkbox" id="small" checked><span><b>Todas as abas</b></span><em></em></label>`+ABAS.map(a=>`<label class="orow on"><input type="checkbox" name="sa" value="${a[0]}" checked><span><b>${a[1]}</b><small>${a[2]}</small></span><em>${contaAba(a[0])}</em></label>`).join('')+(x?'':`<label class="orow${BIP.length?' on':''}"><input type="checkbox" id="smxl"${BIP.length?' checked':''}><span><b>Gerar também o Excel</b><small>Baixa junto o Excel com as mesmas abas</small></span><em></em></label>`);
     $('#smn').textContent='';$('#smok').textContent=x?'Exportar Excel':'Gerar PDF';
+    $('#smcic').innerHTML=$('#fc').innerHTML;$('#smcic').value=$('#fc').value;
   }
   $('#sm').hidden=false;
 }
@@ -1300,19 +1318,78 @@ function exportaSel(tipo,sel){
   const so=sel.size===1&&sel.has('desc');
   if(tipo==='xls')so?exportarExcelDesc():exportarExcel(sel);else so?gerarPDFDesc():gerarPDF(sel);
 }
+/* ---------- relatório: ciclo e relatório em texto ---------- */
+function comCiclo(ciclo,fn){
+  const prev=$('#fc').value;
+  if(ciclo===prev)return fn();
+  $('#fc').value=ciclo;render();Object.values(charts).forEach(ch=>{try{ch.update('none')}catch(e){}});
+  try{return fn()}finally{$('#fc').value=prev;render()}
+}
+function textoRelatorio(ciclo){
+  return comCiclo(ciclo,()=>{
+    const v=view(),m=valMap(),hv=m.size>0;
+    const pl=n=>n===1?'pacote':'pacotes',pc=(n,t)=>t?Math.round(n/t*100):0;
+    const vt=a=>valSoma(a,m),brt=a=>' ('+brl(vt(a).t)+')';
+    const vo=a=>hv&&a.length-vt(a).sem>0?brt(a):'';
+    const todos=[...v.ret,...v.mais,...v.falt,...v.avar];
+    const ln=[];
+    ln.push(`*RELATÓRIO OPERACIONAL — ${ciclo?'CICLO '+ciclo:'TODOS OS CICLOS'} (${new Date().toLocaleDateString('pt-BR')})*`,'');
+    ln.push('*1. RESUMO GERAL*');
+    ln.push(`- Total de pacotes bipados: ${todos.length} IDs`+(hv?` (${brl(vt(todos).t)} — ${todos.length-vt(todos).sem} com valor declarado)`:''));
+    ln.push(`- Pacotes retirados: ${v.ret.length}`+(hv?brt(v.ret):''));
+    ln.push(`- Pacotes à mais: ${v.mais.length}`+(hv?brt(v.mais):''));
+    ln.push(`- Diferença líquida (retirados − à mais): ${v.ret.length-v.mais.length}`);
+    ln.push(`- Faltantes: ${v.falt.length}`+(hv?brt(v.falt):'')+` | Avarias: ${v.avar.length}`+(hv&&v.avar.length?brt(v.avar):''));
+    ln.push('','*2. RETIRADOS POR MOTIVO*');
+    const mo=cnt(v.ret,'motivo');
+    if(mo.length)mo.forEach(([k,n])=>ln.push(`- ${k}: ${n} ${pl(n)} (${pc(n,v.ret.length)}%)`+(vo(v.ret.filter(x=>x.motivo===k))?' —'+vo(v.ret.filter(x=>x.motivo===k)).replace(/[()]/g,''):'')));
+    else ln.push('- Sem registros.');
+    ln.push('','*3. RETIRADOS POR RESPONSÁVEL (MELI)*');
+    const rs=cnt(v.ret,'resp');
+    if(rs.length)rs.forEach(([k,n])=>{
+      const it=v.ret.filter(x=>x.resp===k),dm=cnt(it,'motivo').map(([mk,mn])=>`${mn} ${mk}`).join(' | ');
+      ln.push(`- ${k}: ${n} ${pl(n)} (${pc(n,v.ret.length)}%)`+(dm?` — ${dm}`:''));
+    });else ln.push('- Sem registros.');
+    ln.push('','*4. PACOTES À MAIS POR RESPONSÁVEL (LOG)*');
+    const ls=cnt(v.mais,'resp');
+    if(ls.length)ls.forEach(([k,n])=>ln.push(`- ${k}: ${n} ${pl(n)}`+vo(v.mais.filter(x=>x.resp===k))));
+    else ln.push('- Sem registros.');
+    ln.push('','*5. RESUMO POR TRANSPORTADORA*');
+    const tr=[...new Set([...v.ret,...v.mais].map(x=>x.transp))].map(k=>{const r=v.ret.filter(x=>x.transp===k).length,l=v.mais.filter(x=>x.transp===k).length;return[k,r,l]}).sort((x,y)=>(y[1]+y[2])-(x[1]+x[2])||String(x[0]).localeCompare(y[0]));
+    if(tr.length)tr.forEach(([k,r,l])=>ln.push(`- ${k}: ${r+l} total (${r} ${r===1?'retirado':'retirados'} | ${l} à mais)`));
+    else ln.push('- Sem registros.');
+    ln.push('','*6. DESCONTEINERIZADO*');
+    ln.push(DESC.length?`- ${DESC.length} ${pl(DESC.length)} registrados no arquivo carregado.`:'- Sem arquivo carregado nesta aba.');
+    return ln.join('\n');
+  });
+}
+const wMsg=(m,c)=>{const e=$('#wmsg');e.textContent=m;e.className=c||''};
+function waAbrir(){
+  $('#wc').innerHTML=$('#smcic').innerHTML;$('#wc').value=$('#smcic').value;
+  smFechar();$('#wm').hidden=false;waBase();
+}
+function waBase(){$('#wt').value=textoRelatorio($('#wc').value);wMsg('Texto montado com os dados do relatório. Revise antes de enviar.')}
+$('#smwa').onclick=waAbrir;
+$('#wx').onclick=()=>{$('#wm').hidden=true};
+$('#wm').addEventListener('click',e=>{if(e.target===$('#wm'))$('#wm').hidden=true});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#wm').hidden)$('#wm').hidden=true});
+$('#wc').onchange=waBase;
+$('#wcp').onclick=async()=>{const x=$('#wt').value;try{await navigator.clipboard.writeText(x);wMsg('Texto copiado.','ok')}catch(e){$('#wt').select();document.execCommand('copy');wMsg('Texto copiado.','ok')}};
+$('#wwa').onclick=()=>{const x=$('#wt').value.trim();if(!x){wMsg('Não há texto para enviar.','bad');return}window.open('https://wa.me/?text='+encodeURIComponent(x),'_blank','noopener')};
 $('#smok').onclick=()=>{
   if(SMT==='load'){const k=(document.querySelector('#smo input[name=sk]:checked')||{}).value||'auto';$('#fsel').dataset.k=k;smFechar();$('#fsel').click();return}
   const sel=new Set([...document.querySelectorAll('#smo input[name=sa]:checked')].map(c=>c.value));
   if(!sel.size){$('#smn').textContent='Marque pelo menos uma aba.';return}
   const tambem=SMT==='pdf'&&$('#smxl')&&$('#smxl').checked;
-  smFechar();exportaSel(SMT,sel);if(tambem)exportaSel('xls',sel);
+  const cic=$('#smcic').value;smFechar();
+  comCiclo(cic,()=>{exportaSel(SMT,sel);if(tambem)exportaSel('xls',sel)});
 };
 $('#fsel').onchange=e=>{const f=e.target.files[0],k=e.target.dataset.k||'auto';if(f)f.arrayBuffer().then(b=>load(b,f.name,k));e.target.value=''};
 $('#smx').onclick=$('#smc').onclick=smFechar;
 $('#sm').addEventListener('click',e=>{if(e.target===$('#sm'))smFechar()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sm').hidden)smFechar()});
 const acao=f=>()=>{gaveta(false);f()};
-$('#acl').onclick=acao(()=>smAbrir('load'));$('#ace').onclick=acao(()=>smAbrir('xls'));$('#acp').onclick=acao(()=>smAbrir('pdf'));
+$('#acl').onclick=acao(()=>smAbrir('load'));$('#acp').onclick=acao(()=>smAbrir('pdf'));
 $('#smlimpa').onclick=()=>{smFechar();limparTudo()};
 </script>
 </body>
