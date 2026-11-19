@@ -1,0 +1,1219 @@
+# <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard - PCTS Retirados e à Mais</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2064%2064%22%3E%3Crect%20width=%2264%22%20height=%2264%22%20rx=%2214%22%20fill=%22%232d3277%22/%3E%3Cpath%20d=%22M32%2012%2050%2021.5v21L32%2052%2014%2042.5v-21z%22%20fill=%22%23ffe600%22/%3E%3Cpath%20d=%22M32%2012%2050%2021.5%2032%2031%2014%2021.5z%22%20fill=%22%23fff3a0%22/%3E%3Cpath%20d=%22M32%2031v21%22%20stroke=%22%232d3277%22%20stroke-width=%223%22/%3E%3Cpath%20d=%22M23%2016.8%2041%2026.2%22%20stroke=%22%232d3277%22%20stroke-width=%223%22/%3E%3Ccircle%20cx=%2248%22%20cy=%2248%22%20r=%2210%22%20fill=%22%2300a650%22/%3E%3Cpath%20d=%22m43.5%2048%203.2%203.2%205.3-6.4%22%20fill=%22none%22%20stroke=%22%23fff%22%20stroke-width=%223%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2064%2064%22%3E%3Crect%20width=%2264%22%20height=%2264%22%20rx=%2214%22%20fill=%22%232d3277%22/%3E%3Cpath%20d=%22M32%2012%2050%2021.5v21L32%2052%2014%2042.5v-21z%22%20fill=%22%23ffe600%22/%3E%3Cpath%20d=%22M32%2012%2050%2021.5%2032%2031%2014%2021.5z%22%20fill=%22%23fff3a0%22/%3E%3Cpath%20d=%22M32%2031v21%22%20stroke=%22%232d3277%22%20stroke-width=%223%22/%3E%3Cpath%20d=%22M23%2016.8%2041%2026.2%22%20stroke=%22%232d3277%22%20stroke-width=%223%22/%3E%3Ccircle%20cx=%2248%22%20cy=%2248%22%20r=%2210%22%20fill=%22%2300a650%22/%3E%3Cpath%20d=%22m43.5%2048%203.2%203.2%205.3-6.4%22%20fill=%22none%22%20stroke=%22%23fff%22%20stroke-width=%223%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22/%3E%3C/svg%3E">
+<style>
+:root{--bg:#f4f5fa;--card:#fff;--ink:#1d2033;--mut:#6b7090;--pri:#2d3277;--acc:#ffe600;--line:#e4e6f0}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:var(--pri);color:#fff;padding:18px 24px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;border-bottom:4px solid var(--acc)}
+h1{margin:0;font-size:1.35rem}
+header small{opacity:.8;display:block;margin-top:2px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn,select,input[type=search]{font:inherit;font-size:.9rem;border-radius:8px;border:1px solid var(--line);padding:8px 12px;background:#fff;color:var(--ink)}
+.btn{cursor:pointer;font-weight:600}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#1d2033}
+.btn:hover{filter:brightness(.95)}
+.tabs{display:flex;gap:6px;background:#fff;border-bottom:1px solid var(--line);padding:8px 24px;overflow:auto}
+.tb{font:inherit;font-size:.92rem;font-weight:700;border:0;background:transparent;color:var(--mut);border-radius:8px;padding:9px 16px;cursor:pointer;white-space:nowrap}
+.tb:hover{background:#eef0fa}
+.tb.on{background:var(--pri);color:#fff}
+.pane[hidden]{display:none}
+main{max-width:1200px;margin:0 auto;padding:20px 16px 40px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.kpi span{font-size:.8rem;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.kpi b{display:block;font-size:2rem;margin-top:4px;color:var(--pri)}
+.kpi i{font-style:normal;font-size:.85rem;color:var(--mut)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:14px;margin-bottom:16px}
+.card h2{margin:0 0 10px;font-size:1rem}
+.ch{position:relative;height:260px}
+.tw{max-height:360px;overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th{position:sticky;top:0;background:var(--pri);color:#fff;text-align:left;padding:8px}
+td{padding:7px 8px;border-bottom:1px solid var(--line)}
+tr:nth-child(even) td{background:#f8f9fd}
+#msg{font-size:.8rem;color:var(--mut);margin:0 0 12px}
+@media(max-width:480px){.grid{grid-template-columns:1fr}}
+.ov{position:fixed;inset:0;background:rgba(29,32,51,.55);display:flex;align-items:flex-start;justify-content:center;padding:24px 12px;overflow:auto;z-index:50}
+.ov[hidden]{display:none}
+.md{background:var(--card);border-radius:12px;max-width:1100px;width:100%;padding:18px;border-top:4px solid var(--acc)}
+.mh{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.mh h2{margin:0;font-size:1.15rem}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:12px}
+.fg label{display:flex;flex-direction:column;gap:4px;font-size:.8rem;color:var(--mut);font-weight:600}
+.fg label[hidden]{display:none}
+.md input[type=text],.md select{width:100%;font:inherit;font-size:.9rem;border-radius:8px;border:1px solid var(--line);padding:8px 12px;background:#fff;color:var(--ink)}
+.sc{display:flex;gap:8px;margin-bottom:6px}
+.sc input{flex:1;min-width:0;font-size:1.05rem!important;border:2px solid var(--pri)!important}
+#bmsg{font-size:.85rem;margin:6px 0 12px;min-height:1.2em;color:var(--mut)}
+#bmsg.bad{color:#e53935}
+#bmsg.ok{color:#00864a}
+#smsg{font-size:.85rem;margin:0 0 12px;min-height:1.2em;color:var(--mut)}
+#smsg.bad{color:#e53935}
+#smsg.ok{color:#00864a}
+.pv{margin-bottom:12px}
+.pv .tw{max-height:260px}
+.x{border:0;background:transparent;color:#e53935;font-size:1.1rem;cursor:pointer;line-height:1;padding:2px 6px}
+.mf{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.mn{position:relative}
+.mnl{position:absolute;right:0;top:calc(100% + 8px);background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.22);min-width:250px;padding:6px;z-index:40;display:flex;flex-direction:column;gap:2px}
+.mnl[hidden]{display:none}
+.mi{display:block;text-align:left;font:inherit;font-size:.92rem;font-weight:600;background:transparent;border:0;border-radius:8px;padding:11px 12px;cursor:pointer;color:var(--ink)}
+.mi:hover,.mi:focus-visible{background:#eef0fa;outline:none}
+.g2{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:16px}
+@media(min-width:1000px){.g2{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr)}}
+.g2 table{font-size:.8rem}
+.g2 th,.g2 td{padding:6px}
+.ah{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.ah h2{margin:0}
+.ac{display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--mut)}
+.ac .btn:disabled{opacity:.45;cursor:not-allowed}
+.ck{width:17px;height:17px;cursor:pointer;accent-color:var(--pri)}
+tr.sel td{background:#fff8d6!important}
+#t7 tr,#t9 tr{cursor:pointer}
+#rmsg{font-size:.85rem;min-height:1.2em;margin:0 0 10px;color:var(--mut)}
+#rmsg.ok{color:#00864a}
+#t10 tr,#t11 tr{cursor:pointer}
+#dmsg,#drmsg{font-size:.85rem;min-height:1.2em;margin:0 0 10px;color:var(--mut)}
+#drmsg.ok{color:#00864a}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chip{font:inherit;font-size:.85rem;font-weight:600;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:6px 13px;cursor:pointer}
+.chip:hover{background:#eef0fa}
+.chip[aria-pressed=true]{background:var(--pri);color:#fff;border-color:var(--pri)}
+.chip small{opacity:.75;margin-left:5px;font-size:.78rem}
+.fl{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;flex-basis:100%}
+.fl .lb{font-size:.8rem;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:.04em;min-width:64px}
+.fcard{margin-bottom:14px;padding:14px 16px;display:grid;gap:12px}
+.fr{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.fr.sep{padding-top:12px;border-top:1px solid var(--line)}
+.fr .sp{margin-left:auto}
+.fr input[type=search]{flex:1;min-width:220px}
+.fcard .fl{display:grid;grid-template-columns:70px 1fr;gap:6px 10px;align-items:center}
+.fcard .fl .lb{font-size:.72rem;min-width:0}
+.fcard .chip{font-size:.8rem;padding:5px 6px 5px 12px;display:inline-flex;align-items:center;gap:7px}
+.fcard .chip small{margin:0;opacity:1;background:rgba(45,50,119,.1);color:var(--pri);border-radius:999px;padding:1px 8px;font-size:.72rem;min-width:22px;text-align:center}
+.fcard .chip[aria-pressed=true] small{background:rgba(255,255,255,.22);color:#fff}
+.dts{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.dts select{min-width:112px;text-transform:none;letter-spacing:0;font-weight:500;padding:7px 10px}
+.btn.g{background:transparent;border-color:transparent;color:var(--mut);padding:7px 8px}
+.btn.g:hover{background:#eef0fa;filter:none}
+@media(max-width:560px){.fcard .fl{grid-template-columns:1fr}.fr .sp{margin-left:0}}
+.hbw{display:flex;align-items:center;gap:14px}
+.hb{width:42px;height:42px;border-radius:10px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none;padding:0}
+.hb:hover,.hb:focus-visible{background:rgba(255,255,255,.22);outline:none}
+.hb svg{width:22px;height:22px;stroke:#fff;stroke-width:2.2;stroke-linecap:round;fill:none}
+.tabs{position:fixed;left:0;top:0;bottom:0;width:min(300px,84vw);flex-direction:column;gap:4px;overflow:auto;padding:0 12px 16px;z-index:60;border-right:1px solid var(--line);box-shadow:8px 0 30px rgba(0,0,0,.25);transform:translateX(-104%);visibility:hidden;transition:transform .22s ease,visibility 0s .22s}
+.tabs.open{transform:none;visibility:visible;transition:transform .22s ease}
+.tabs .th{display:flex;align-items:center;justify-content:space-between;margin:0 -12px 10px;padding:16px 18px;background:var(--pri);color:#fff;border-bottom:4px solid var(--acc);font-weight:800}
+.tabs .th button{background:transparent;border:0;color:#fff;font-size:1.5rem;line-height:1;cursor:pointer;padding:0 4px}
+.tabs .tl{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);padding:10px 8px 4px}
+.tabs .tb{text-align:left;width:100%;padding:12px 14px;font-size:.95rem}
+.tabs .tb.on{box-shadow:inset 4px 0 0 var(--acc)}
+#ov{position:fixed;inset:0;background:rgba(20,22,50,.5);z-index:55}
+#ov[hidden]{display:none}
+.hbw small b{font-weight:700}
+.tabs .ta{font:inherit;font-size:.95rem;font-weight:700;text-align:left;width:100%;border:0;background:transparent;color:var(--ink);border-radius:8px;padding:12px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.tabs .ta:hover,.tabs .ta:focus-visible{background:#eef0fa;outline:none}
+.tabs .ta i{font-style:normal;color:var(--mut);font-weight:400}
+.tabs .ta.dg{color:#c62828;margin-top:6px;border-top:1px solid var(--line);border-radius:0 0 8px 8px}
+.so{display:grid;gap:6px;margin:6px 0 10px}
+.orow{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:10px;cursor:pointer;background:#fff}
+.orow:hover{background:#f6f7fc}
+.orow.on{border-color:var(--pri);background:#eef0fa}
+.orow input{width:18px;height:18px;accent-color:var(--pri)}
+.orow span b{display:block;font-size:.95rem}
+.orow span small{color:var(--mut);font-size:.78rem}
+.orow em{font-style:normal;font-weight:800;color:var(--pri);font-size:.9rem}
+.orow.all{background:#f4f5fa;font-weight:700}
+.smd{margin:0 0 6px;color:var(--mut);font-size:.88rem}
+body.semrota .tw table:has(#t7) :is(th,td):nth-child(n+5):nth-child(-n+8),body.semrota .tw table:has(#t8) :is(th,td):nth-child(n+6):nth-child(-n+8),body.semrota .tw table:has(#t9) :is(th,td):nth-child(n+4):nth-child(-n+7){display:none}
+body.semvalor .cv{display:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="hbw">
+    <button class="hb" id="hb" type="button" aria-label="Abrir menu de abas" aria-expanded="false" aria-controls="tabsnav"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+    <div><h1>PCTS Retirados e à Mais</h1><small>Dashboard operacional · <b id="abanome">Visão geral</b></small></div>
+  </div>
+  <div class="bar">
+    <select id="fc" title="Filtrar por ciclo"></select>
+    <button class="btn p" id="bip">Bipar IDs</button>
+    <div class="mn" hidden>
+      <button class="btn" id="mnb" aria-haspopup="true" aria-expanded="false">Menu ▾</button>
+      <div class="mnl" id="mnl" hidden>
+        <button class="mi" id="pdf">Baixar relatório PDF</button>
+        <button class="mi" id="xls">Exportar relatório em Excel</button>
+        <label class="mi">Carregar planilha<input type="file" id="file" accept=".xlsx,.xls,.csv" hidden></label>
+        <button class="mi" id="limpa" style="color:#c62828;border-top:1px solid var(--line);border-radius:0 0 8px 8px;margin-top:4px">Limpar dados</button>
+      </div>
+    </div>
+  </div>
+</header>
+<div id="ov" hidden></div>
+<div class="ov" id="sm" hidden role="dialog" aria-modal="true" aria-labelledby="smt" style="z-index:70;align-items:center">
+  <div class="md" style="max-width:480px">
+    <div class="mh"><h2 id="smt"></h2><button class="btn" id="smx" type="button">Fechar</button></div>
+    <p class="smd" id="smd"></p>
+    <div class="so" id="smo"></div>
+    <p class="smd" id="smn"></p>
+    <div class="mf"><button class="btn" id="smc" type="button">Cancelar</button><button class="btn p" id="smok" type="button"></button></div>
+  </div>
+</div>
+<input type="file" id="fsel" accept=".xlsx,.xls,.csv" hidden>
+<nav class="tabs" id="tabsnav" role="tablist" aria-label="Abas do Dashboard">
+  <div class="th"><span>Abas</span><button type="button" id="hbx" aria-label="Fechar menu">×</button></div>
+  <button class="tb on" id="tbg" role="tab" aria-selected="true" data-tab="geral">Visão geral</button>
+  <div class="tl">Conferência</div>
+  <button class="tb" id="tbf" role="tab" aria-selected="false" data-tab="falt">Faltantes (<span id="tbn">0</span>)</button>
+  <button class="tb" id="tba" role="tab" aria-selected="false" data-tab="avar">Avarias (<span id="tbna">0</span>)</button>
+  <button class="tb" id="tbp" role="tab" aria-selected="false" data-tab="fis">Físico (<span id="tbnp">0</span>)</button>
+  <button class="tb" id="tbs" role="tab" aria-selected="false" data-tab="sist">Sistêmica (<span id="tbns">0</span>)</button>
+  <button class="tb" id="tbd" role="tab" aria-selected="false" data-tab="desc">Desconteinerizado (<span id="tbnd">0</span>)</button>
+  <div class="tl">Ações</div>
+  <button class="ta" id="acl" type="button">Carregar arquivo <i>›</i></button>
+  <button class="ta" id="ace" type="button">Exportar relatório em Excel <i>›</i></button>
+  <button class="ta" id="acp" type="button">Baixar relatório PDF <i>›</i></button>
+  <button class="ta dg" id="acx" type="button">Limpar dados</button>
+</nav>
+<main>
+ <div class="pane" id="pg">
+  <p id="msg"></p>
+  <section class="kpis">
+    <div class="card kpi"><span>Pacotes retirados</span><b id="k1">0</b><i>Não couberam / retirados</i></div>
+    <div class="card kpi"><span>Pacotes à mais</span><b id="k2">0</b><i>Identificados pela LOG</i></div>
+    <div class="card kpi"><span>Retirados − à mais</span><b id="k3">0</b><i>Diferença líquida</i></div>
+    <div class="card kpi"><span>Maior responsável</span><b id="k4" style="font-size:1.4rem;margin-top:10px">-</b><i id="k4s"></i></div>
+  </section>
+  <div id="kval" hidden>
+    <h2 style="margin:6px 0 12px;font-size:1.1rem;color:var(--pri)">Valor declarado dos pacotes bipados</h2>
+    <section class="kpis">
+      <div class="card kpi"><span>Valor total</span><b id="vg1">-</b><i id="vg1s"></i></div>
+      <div class="card kpi"><span>Retirados</span><b id="vg2">-</b><i id="vg2s"></i></div>
+      <div class="card kpi"><span>À mais</span><b id="vg3">-</b><i id="vg3s"></i></div>
+      <div class="card kpi"><span>Faltantes</span><b id="vg4">-</b><i id="vg4s"></i></div>
+      <div class="card kpi"><span>Avarias</span><b id="vg5">-</b><i id="vg5s"></i></div>
+    </section>
+  </div>
+  <section class="grid">
+    <div class="card"><h2>Retirados por responsável (MELI)</h2><div class="ch"><canvas id="c1"></canvas></div></div>
+    <div class="card"><h2>Retirados por motivo</h2><div class="ch"><canvas id="c2"></canvas></div></div>
+    <div class="card"><h2>À mais por responsável (LOG)</h2><div class="ch"><canvas id="c3"></canvas></div></div>
+    <div class="card"><h2>Retirados × à mais por ciclo</h2><div class="ch"><canvas id="c4"></canvas></div></div>
+  </section>
+  <div class="card" style="margin-bottom:14px"><input type="search" id="q" placeholder="Buscar por ID ou responsável..." style="width:100%"></div>
+  <section class="grid">
+    <div class="card"><h2>Detalhe - Retirados</h2><div class="tw"><table><thead><tr><th>ID</th><th>Responsável</th><th>Motivo</th><th>Ciclo</th><th class="cv">Valor declarado</th></tr></thead><tbody id="t1"></tbody></table></div></div>
+    <div class="card"><h2>Detalhe - À mais</h2><div class="tw"><table><thead><tr><th>ID</th><th>Responsável LOG</th><th>Ciclo</th><th class="cv">Valor declarado</th></tr></thead><tbody id="t2"></tbody></table></div></div>
+  </section>
+  <h2 style="margin:22px 0 12px;font-size:1.1rem;color:var(--pri)">Transportadora</h2>
+  <section class="kpis" id="ktr"></section>
+  <section class="grid">
+    <div class="card"><h2>Retirados por transportadora</h2><div class="ch"><canvas id="c6"></canvas></div></div>
+    <div class="card"><h2>À mais por transportadora</h2><div class="ch"><canvas id="c7"></canvas></div></div>
+    <div class="card"><h2>Retirados × à mais por transportadora</h2><div class="ch"><canvas id="c8"></canvas></div></div>
+    <div class="card"><h2>Resumo por transportadora</h2><div class="tw"><table><thead><tr><th>Transportadora</th><th>Retirados</th><th>À mais</th><th>Total</th></tr></thead><tbody id="t4"></tbody></table></div></div>
+  </section>
+ </div>
+
+ <div class="pane" id="pf" hidden>
+  <section class="kpis">
+    <div class="card kpi"><span>Pacotes faltantes</span><b id="f1">0</b><i>Bipados como faltante</i></div>
+    <div class="card kpi"><span>Maior responsável LOG</span><b id="f2" style="font-size:1.4rem;margin-top:10px">-</b><i id="f2s"></i></div>
+    <div class="card kpi"><span>Transportadora com mais faltantes</span><b id="f3" style="font-size:1.4rem;margin-top:10px">-</b><i id="f3s"></i></div>
+  </section>
+  <section class="grid">
+    <div class="card"><h2>Faltantes por responsável (LOG)</h2><div class="ch"><canvas id="c9"></canvas></div></div>
+    <div class="card"><h2>Faltantes por transportadora</h2><div class="ch"><canvas id="c10"></canvas></div></div>
+    <div class="card"><h2>Faltantes por ciclo</h2><div class="ch"><canvas id="c11"></canvas></div></div>
+  </section>
+  <div class="card" style="margin-bottom:14px;display:flex;flex-wrap:wrap;gap:8px">
+    <input type="search" id="qf" placeholder="Buscar por ID ou responsável LOG..." style="flex:1;min-width:200px">
+    <button class="btn p" id="bfa2">+ Bipar faltantes</button>
+  </div>
+  <div class="card"><h2>Detalhe - Faltantes</h2><div class="tw"><table><thead><tr><th>ID</th><th>Responsável LOG</th><th>Transportadora</th><th>Ciclo</th><th>Bipado em</th><th class="cv">Valor declarado</th><th></th></tr></thead><tbody id="t5"></tbody></table></div></div>
+ </div>
+ <div class="pane" id="pa" hidden>
+  <section class="kpis">
+    <div class="card kpi"><span>Pacotes com avaria</span><b id="a1">0</b><i>Bipados como avaria</i></div>
+    <div class="card kpi"><span>Maior responsável LOG</span><b id="a2" style="font-size:1.4rem;margin-top:10px">-</b><i id="a2s"></i></div>
+    <div class="card kpi"><span>Transportadora com mais avarias</span><b id="a3" style="font-size:1.4rem;margin-top:10px">-</b><i id="a3s"></i></div>
+  </section>
+  <section class="grid">
+    <div class="card"><h2>Avarias por responsável (LOG)</h2><div class="ch"><canvas id="c12"></canvas></div></div>
+    <div class="card"><h2>Avarias por transportadora</h2><div class="ch"><canvas id="c13"></canvas></div></div>
+    <div class="card"><h2>Avarias por ciclo</h2><div class="ch"><canvas id="c14"></canvas></div></div>
+  </section>
+  <div class="card" style="margin-bottom:14px;display:flex;flex-wrap:wrap;gap:8px">
+    <input type="search" id="qa" placeholder="Buscar por ID ou responsável LOG..." style="flex:1;min-width:200px">
+    <button class="btn p" id="bav2">+ Bipar avarias</button>
+  </div>
+  <div class="card"><h2>Detalhe - Avarias</h2><div class="tw"><table><thead><tr><th>ID</th><th>Responsável LOG</th><th>Transportadora</th><th>Ciclo</th><th>Bipado em</th><th class="cv">Valor declarado</th><th></th></tr></thead><tbody id="t6"></tbody></table></div></div>
+ </div>
+<div class="pane" id="pfi" hidden>
+  <p id="fmsg" style="font-size:.8rem;color:var(--mut);margin:0 0 12px"></p>
+  <section class="kpis">
+    <div class="card kpi"><span>IDs repetidos</span><b id="p1">0</b><i>Na planilha e nas abas</i></div>
+    <div class="card kpi"><span>Retirados</span><b id="p2">0</b><i>Repetidos como retirado</i></div>
+    <div class="card kpi"><span>À mais</span><b id="p3">0</b><i>Repetidos como à mais</i></div>
+    <div class="card kpi"><span>Avarias</span><b id="p4">0</b><i>Repetidos como avaria</i></div>
+    <div class="card kpi"><span>Faltantes</span><b id="p5">0</b><i>Repetidos como faltante</i></div>
+    <div class="card kpi"><span>Para revisar</span><b id="p6" style="color:#b8860b">0</b><i>Status ≠ estado da planilha</i></div>
+  </section>
+  <section class="grid">
+    <div class="card"><h2>Repetidos por status</h2><div class="ch"><canvas id="c19"></canvas></div></div>
+    <div class="card"><h2>Repetidos por estado na planilha</h2><div class="ch"><canvas id="c20"></canvas></div></div>
+  </section>
+  <div class="card" style="margin-bottom:14px;font-size:.88rem;line-height:1.5"><b>Como ler:</b> o ID está na planilha e também foi bipado. <b style="color:#00864a">Confere</b> = o status bipado é igual ao estado da planilha (ex.: À mais nos dois). <b style="color:#b8860b">Revisar</b> = são diferentes (ex.: bipado como Retirado, mas a planilha diz Correto). A coluna Resultado explica cada caso.</div>
+  <div class="card" style="margin-bottom:14px;display:flex;flex-wrap:wrap;gap:8px"><input type="search" id="qp" placeholder="Buscar por ID, placa, rota ou responsável..." style="flex:1;min-width:200px"><select id="sfp"><option value="">Todas as situações</option><option>Confere</option><option>Revisar</option></select></div>
+  <div class="card"><h2>Detalhe - Físico</h2><div class="tw"><table><thead><tr><th>ID</th><th>Status</th><th>Estado na planilha</th><th>Situação</th><th>Resultado</th><th>Placa</th><th>Rota</th><th>Rep auditoria</th><th>Responsável</th><th>Transportadora</th><th>Ciclo</th><th>Status do envio</th><th>Valor declarado</th></tr></thead><tbody id="t8"></tbody></table></div></div>
+ </div>
+ <div class="pane" id="psi" hidden>
+  <p id="smsg"></p>
+  <section class="kpis">
+    <div class="card kpi"><span>Total na planilha</span><b id="y1">0</b><i id="y1s"></i></div>
+    <div class="card kpi"><span>Repetidos</span><b id="y2">0</b><i>Foram para o Físico</i></div>
+    <div class="card kpi"><span>Só sistêmica</span><b id="y3">0</b><i>Ficam nesta aba</i></div>
+    <div class="card kpi"><span>À mais</span><b id="y4">0</b><i>Na sistêmica</i></div>
+    <div class="card kpi"><span>Faltantes</span><b id="y5">0</b><i>Na sistêmica</i></div>
+    <div class="card kpi vk"><span>Valor declarado total</span><b id="v1">-</b><i>Todos os IDs da planilha</i></div>
+    <div class="card kpi vk"><span>Valor conferido</span><b id="v2">-</b><i>Físico: Confere</i></div>
+    <div class="card kpi vk"><span>Valor a revisar</span><b id="v3">-</b><i>Físico: Revisar</i></div>
+    <div class="card kpi vk"><span>Valor não bipado</span><b id="v4">-</b><i>Só na planilha</i></div>
+    <div class="card kpi"><span>Reatribuição</span><b id="y6">0</b><i>Pacotes movimentados</i></div>
+  </section>
+  <section class="grid">
+    <div class="card"><h2>Sistêmica por estado</h2><div class="ch"><canvas id="c15"></canvas></div></div>
+    <div class="card"><h2>Sistêmica por placa (top 12)</h2><div class="ch"><canvas id="c16"></canvas></div></div>
+    <div class="card"><h2>Sistêmica por rep auditoria (top 12)</h2><div class="ch"><canvas id="c17"></canvas></div></div>
+    <div class="card"><h2>Sistêmica por hora da auditoria</h2><div class="ch"><canvas id="c18"></canvas></div></div>
+  </section>
+  <div class="card fcard">
+    <div class="fr">
+      <input type="search" id="qy" placeholder="Buscar por ID, placa, rota ou rep...">
+      <select id="sfe"><option value="">Todos os estados</option><option>Correto</option><option>À mais</option><option>Faltante</option></select>
+    </div>
+    <div class="fl"><span class="lb">Ciclo</span><div class="chips" id="chs"></div></div>
+  </div>
+  <p id="rmsg" role="status"></p>
+  <section class="g2">
+    <div class="card">
+      <div class="ah"><h2>Detalhe - Sistêmica (<span id="sn">0</span>)</h2>
+        <div class="ac"><span id="selc">0 selecionados</span><button class="btn p" id="mvb" disabled>Mover para Reatribuição →</button></div></div>
+      <div class="tw"><table><thead><tr><th><input type="checkbox" class="ck" id="sela" aria-label="Selecionar todos os IDs da lista"></th><th>ID</th><th>Estado</th><th>Resultado</th><th>Placa</th><th>Rota</th><th>Rep auditoria</th><th>Data auditoria</th><th>Status do envio</th><th>Valor declarado</th></tr></thead><tbody id="t7"></tbody></table></div>
+    </div>
+    <div class="card">
+      <div class="ah"><h2>Pacotes movimentados - Reatribuição (<span id="rn">0</span>)</h2>
+        <div class="ac"><span id="rselc">0 selecionados</span><button class="btn" id="rvb" disabled>← Devolver para Sistêmica</button></div></div>
+      <div class="tw"><table><thead><tr><th><input type="checkbox" class="ck" id="rsela" aria-label="Selecionar todos os IDs da Reatribuição"></th><th>ID</th><th>Estado</th><th>Placa</th><th>Rota</th><th>Rep auditoria</th><th>Data auditoria</th><th>Movido em</th><th>Valor declarado</th></tr></thead><tbody id="t9"></tbody></table></div>
+    </div>
+  </section>
+ </div>
+
+ <div class="pane" id="pd" hidden>
+  <p id="dmsg"></p>
+  <div class="chips" style="margin:0 0 10px"><button class="btn p" id="dpdf" type="button">Baixar relatório PDF</button><button class="btn" id="dxls" type="button">Exportar relatório em Excel</button><span style="font-size:.82rem;color:var(--mut)">Os relatórios seguem os filtros de Período, Ciclo e demais filtros desta aba.</span></div>
+  <section class="kpis">
+    <div class="card kpi"><span>Total desconteinerizado</span><b id="d1">0</b><i id="d1s"></i></div>
+    <div class="card kpi"><span>Na lista</span><b id="d2">0</b><i>Ainda não reatribuídos</i></div>
+    <div class="card kpi"><span>Reatribuição</span><b id="d3">0</b><i>IDs movidos</i></div>
+    <div class="card kpi"><span>Pendentes</span><b id="d4">0</b><i>Estado Pendente</i></div>
+    <div class="card kpi"><span>Maior problem solver</span><b id="d5" style="font-size:1.4rem;margin-top:10px">-</b><i id="d5s"></i></div>
+  </section>
+  <section class="grid">
+    <div class="card"><h2>Por motivo da exclusão</h2><div class="ch"><canvas id="c21"></canvas></div></div>
+    <div class="card"><h2>Por problem solver (top 12)</h2><div class="ch"><canvas id="c22"></canvas></div></div>
+    <div class="card"><h2>Por estado</h2><div class="ch"><canvas id="c23"></canvas></div></div>
+    <div class="card"><h2>Por dia de criação</h2><div class="ch"><canvas id="c24"></canvas></div></div>
+  </section>
+  <div class="card fcard">
+    <div class="fr">
+      <input type="search" id="qd" placeholder="Buscar por ID, problem solver ou motivo...">
+      <select id="sfd"><option value="">Todos os estados</option><option>Pendente</option><option>Encerrado</option><option>Cancelada</option></select>
+      <select id="sfmd"><option value="">Todos os motivos</option></select>
+      <label class="btn p sp" style="display:inline-block">Carregar arquivo<input type="file" id="filed" accept=".csv,.xlsx,.xls" hidden></label>
+    </div>
+    <div class="fr sep">
+      <span class="dts">Datas <select id="dde" aria-label="De"></select> até <select id="dat" aria-label="Até"></select></span>
+      <button class="btn g" id="dlimp" type="button">Limpar datas</button>
+    </div>
+    <div class="fl"><span class="lb">Período</span><div class="chips" id="chp"></div></div>
+    <div class="fl"><span class="lb">Ciclo</span><div class="chips" id="chd"></div></div>
+  </div>
+  <p id="drmsg" role="status"></p>
+  <section class="g2">
+    <div class="card">
+      <div class="ah"><h2>Desconteinerizado (<span id="dsn">0</span>)</h2>
+        <div class="ac"><span id="dselc">0 selecionados</span><button class="btn p" id="dmvb" disabled>Mover para Reatribuição →</button></div></div>
+      <div class="tw"><table><thead><tr><th><input type="checkbox" class="ck" id="dsela" aria-label="Selecionar todos os IDs da lista"></th><th>ID do pacote</th><th>Estado</th><th>Problem solver</th><th>Criação</th><th>Motivo da exclusão</th></tr></thead><tbody id="t10"></tbody></table></div>
+    </div>
+    <div class="card">
+      <div class="ah"><h2>Reatribuição (<span id="drn">0</span>)</h2>
+        <div class="ac"><span id="drselc">0 selecionados</span><button class="btn" id="drvb" disabled>← Devolver</button></div></div>
+      <div class="tw"><table><thead><tr><th><input type="checkbox" class="ck" id="drsela" aria-label="Selecionar todos os IDs da Reatribuição"></th><th>ID do pacote</th><th>Estado</th><th>Problem solver</th><th>Motivo</th><th>Movido em</th></tr></thead><tbody id="t11"></tbody></table></div>
+    </div>
+  </section>
+ </div>
+</main>
+
+<div class="ov" id="bm" hidden role="dialog" aria-modal="true" aria-labelledby="bmt">
+ <div class="md">
+  <div class="mh"><h2 id="bmt">Bipar IDs</h2><button class="btn" id="bx">Fechar</button></div>
+  <div class="fg">
+   <label>Status<select id="bs"><option>Retirado</option><option>À mais</option><option>Faltante</option><option>Avaria</option></select></label>
+   <label><span id="bl">MELI responsável</span><input type="text" id="br" list="brl" placeholder="Digite o nome" autocomplete="off"></label>
+   <label>Ciclo<input type="text" id="bc" list="bcl" placeholder="PM, AM, SD" autocomplete="off"></label>
+   <label>Transportadora<input type="text" id="bt" list="btl" placeholder="Nome da transportadora" autocomplete="off"></label>
+   <label id="bmw">Motivo<select id="bmot"><option>Não cabe no veículo</option><option>Área bloqueada</option><option>Fora de área</option><option>Autorizado a retirada</option><option>Inclusão manual</option><option>PCTs sem atrelar</option></select></label>
+  </div>
+  <datalist id="brl"></datalist><datalist id="bcl"></datalist><datalist id="btl"></datalist>
+  <div class="sc"><input type="text" id="bid" placeholder="Bipe ou cole o ID e aperte Enter" inputmode="numeric" autocomplete="off"><button class="btn p" id="ba">Adicionar</button></div>
+  <p id="bmsg" role="status"></p>
+  <section class="grid pv">
+    <div class="card"><h2>Retirados (<span id="bn1">0</span>)</h2><div class="tw"><table><thead><tr><th>ID</th><th>MELI responsável</th><th>Transportadora</th><th>Ciclo</th><th></th></tr></thead><tbody id="bt1"></tbody></table></div></div>
+    <div class="card"><h2>À mais (<span id="bn2">0</span>)</h2><div class="tw"><table><thead><tr><th>ID</th><th>LOG responsável</th><th>Transportadora</th><th>Ciclo</th><th></th></tr></thead><tbody id="bt2"></tbody></table></div></div>
+    <div class="card"><h2>Faltantes (<span id="bn3">0</span>)</h2><div class="tw"><table><thead><tr><th>ID</th><th>LOG responsável</th><th>Transportadora</th><th>Ciclo</th><th></th></tr></thead><tbody id="bt3"></tbody></table></div></div>
+    <div class="card"><h2>Avarias (<span id="bn4">0</span>)</h2><div class="tw"><table><thead><tr><th>ID</th><th>LOG responsável</th><th>Transportadora</th><th>Ciclo</th><th></th></tr></thead><tbody id="bt4"></tbody></table></div></div>
+  </section>
+  <div class="mf"><button class="btn" id="bclr">Limpar bipados</button><button class="btn" id="bxl">Exportar relatório em Excel</button><button class="btn p" id="bdone">Concluir</button></div>
+ </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+let SCIC='',DPER=0,DCIC='',CMAP=new Map();
+const PAL=['#2d3277','#f5b800','#00a650','#e53935','#6c7ae0','#8d6e63'];
+let DATA={ret:[],mais:[],mov:[],aud:[],audDup:0}, SRC='nenhuma planilha carregada', AUDSRC='', charts={};
+
+/* ---------- utilidades ---------- */
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cap=s=>s?s[0].toUpperCase()+s.slice(1):s;
+const nome=s=>{s=String(s||'').trim().toLowerCase().replace(/\s+/g,' ');return s?s.split(' ').map(w=>['da','de','do','das','dos','e'].includes(w)?w:cap(w)).join(' '):'Não informado'};
+const cnt=(a,k)=>Object.entries(a.reduce((m,x)=>(m[x[k]]=(m[x[k]]||0)+1,m),{})).sort((x,y)=>y[1]-x[1]);
+
+/* ---------- leitura da planilha ---------- */
+const NI='Transportadora',TRK=new Map();
+const canonTr=s=>{const t=String(s??'').trim().replace(/\s+/g,' ');if(!t)return NI;const k=t.toLowerCase();if(!TRK.has(k))TRK.set(k,t);return TRK.get(k)};
+function parse(rows){
+  const hi=rows.findIndex(r=>r.some(c=>/^IDS?$/.test(String(c).trim().toUpperCase())));
+  if(hi<0) throw new Error('cabeçalho "IDS" não encontrado');
+  const h=rows[hi].map(c=>String(c).trim().toUpperCase());
+  const st=h.map((v,i)=>/^IDS?$/.test(v)?i:-1).filter(i=>i>=0);
+  const blk=st.map((s,k)=>{const e=st[k+1]??h.length;const f=re=>{for(let i=s;i<e;i++)if(re.test(h[i]))return i;return -1};return{id:s,resp:f(/RESPONS/),mot:f(/MOTIVO/),tr:f(/TRANSPORT/),cic:f(/CICLO/)}});
+  const get=(b,mot)=>{const o=[];if(!b)return o;for(const r of rows.slice(hi+1)){
+    const m=String(r[b.id]??'').match(/\d{8,}/);if(!m)continue;
+    const x={id:m[0],resp:nome(r[b.resp]),transp:canonTr(b.tr>=0?r[b.tr]:''),ciclo:String(r[b.cic]??'').trim().toUpperCase()||'Sem ciclo'};
+    if(mot)x.motivo=canonMot(cap(String(r[b.mot]??'').trim())||'Não informado');o.push(x)}return o};
+  return{ret:get(blk[0],true),mais:get(blk[1],false)};
+}
+const MOVS=['Retirado','À mais'];
+const semAc=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
+const movNome=s=>{const k=semAc(s);const f=MOVS.find(m=>semAc(m)===k||(k==='a mais'&&m==='À mais'));return f||(k?cap(String(s).trim()):'Sem movimentação')};
+function parseMov(rows){
+  const hi=rows.findIndex(r=>r.some(c=>/MOVIMENTA/.test(String(c).toUpperCase())));
+  if(hi<0)return[];
+  const h=rows[hi].map(c=>String(c).trim().toUpperCase());
+  const ci=h.findIndex(v=>/^IDS?$/.test(v)),mi=h.findIndex(v=>/MOVIMENTA/.test(v)),di=h.findIndex(v=>/ENTRADA|BRUTA/.test(v)),cc=h.findIndex(v=>/CICLO/.test(v));
+  const o=[];
+  for(const r of rows.slice(hi+1)){
+    const m=String(r[ci]??'').match(/\d{8,}/)||(di>=0&&String(r[di]??'').match(/\d{8,}/));
+    if(!m)continue;
+    o.push({id:m[0],mov:movNome(r[mi]),ciclo:(cc>=0&&String(r[cc]??'').trim().toUpperCase())||'Sem ciclo'});
+  }
+  return o;
+}
+function load(buf,name,kind){kind=kind||'auto';
+  try{const wb=/\.csv$/i.test(name||'')?XLSX.read(new TextDecoder('utf-8').decode(buf),{type:'string',raw:true}):XLSX.read(buf,{type:'array'});
+    const rd=n=>XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,defval:''});
+    const dd=(kind==='auto'||kind==='desc')?parseDesc(rd(wb.SheetNames[0])):null;
+    if(dd){carregarDesc(buf,name);return}
+    if(kind==='desc')throw new Error('não achei a coluna "ID do pacote". Esse arquivo não parece ser do Desconteinerizado.');
+    const au=(kind==='auto'||kind==='sis')?parseAud(rd(wb.SheetNames[0])):null;
+    if(au){DATA={...DATA,aud:au.rows,audDup:au.dup};AUDSRC=name;refreshFc();render();abaTrocar('sist');return}
+    if(kind==='sis')throw new Error('não achei a coluna SHIPMENT ou ID do envio. Esse arquivo não parece ser a planilha Sistêmica.');
+    const nm=wb.SheetNames.find(n=>/MOVIMENTA/.test(n.toUpperCase()));
+    const mov=nm?parseMov(rd(nm)):[];
+    let d;
+    try{d=parse(rd(wb.SheetNames[0]))}catch(e){if(!mov.length)throw e;d={ret:[],mais:[]}}
+    d.mov=mov;
+    setData(d,name)}
+  catch(e){alert('Não consegui ler a planilha: '+e.message)}
+}
+function setData(d,src){
+  d.aud=d.aud||DATA.aud||[];d.audDup=d.audDup??DATA.audDup??0;DATA=d;SRC=src;
+  refreshFc();
+  render();
+}
+const view=()=>{const c=$('#fc').value,f=a=>c?a.filter(x=>x.ciclo===c):a;const bp=k=>BIP.filter(x=>x.status===k);return{ret:f([...DATA.ret,...bp('Retirado')]),mais:f([...DATA.mais,...bp('À mais')]),falt:f(bp('Faltante')),avar:f(bp('Avaria')),mov:f([...DATA.ret.map(x=>({id:x.id,mov:'Retirado',ciclo:x.ciclo})),...DATA.mais.map(x=>({id:x.id,mov:'À mais',ciclo:x.ciclo})),...(DATA.mov||[]).filter(x=>!DATA.ret.some(y=>y.id===x.id)&&!DATA.mais.some(y=>y.id===x.id)),...BIP.map(x=>({id:x.id,mov:x.status,ciclo:x.ciclo}))]),c}};
+
+/* ---------- gráficos ---------- */
+Chart.defaults.font.family='system-ui,-apple-system,"Segoe UI",Arial,sans-serif';
+Chart.register({id:'vl',afterDatasetsDraw(ch){
+  if(ch.config.type!=='bar')return;const c=ch.ctx,hz=ch.options.indexAxis==='y';
+  c.save();c.fillStyle='#1d2033';c.font='600 12px system-ui,Arial';c.textBaseline='middle';c.textAlign=hz?'left':'center';
+  ch.data.datasets.forEach((d,i)=>ch.getDatasetMeta(i).data.forEach((b,j)=>{const v=d.data[j];if(v)c.fillText(v,hz?b.x+6:b.x,hz?b.y:b.y-10)}));
+  c.restore()}});
+function mk(id,cfg){
+  if(charts[id])charts[id].destroy();
+  cfg.options={responsive:true,maintainAspectRatio:false,...cfg.options};
+  charts[id]=new Chart($('#'+id),cfg);
+}
+const hbar=(e,col)=>({type:'bar',data:{labels:e.map(x=>x[0]),datasets:[{data:e.map(x=>x[1]),backgroundColor:col,borderRadius:4}]},
+  options:{indexAxis:'y',plugins:{legend:{display:false}},layout:{padding:{right:28}},scales:{x:{beginAtZero:true,ticks:{precision:0}}}}});
+
+function render(){
+  const v=view(),R=cnt(v.ret,'resp'),M=cnt(v.ret,'motivo'),L=cnt(v.mais,'resp');
+  const cic=[...new Set([...v.ret,...v.mais].map(x=>x.ciclo))].sort();
+  const n=(a,c)=>a.filter(x=>x.ciclo===c).length, t=R[0]||['-',0];
+  $('#k1').textContent=v.ret.length;$('#k2').textContent=v.mais.length;$('#k3').textContent=v.ret.length-v.mais.length;
+  $('#k4').textContent=t[0];$('#k4s').textContent=v.ret.length?`${t[1]} pacotes (${Math.round(t[1]/v.ret.length*100)}% dos retirados)`:'';
+  $('#msg').textContent=(v.ret.length+v.mais.length+v.falt.length+v.avar.length)?'Fonte dos dados: '+SRC:'Nenhuma planilha carregada: dados zerados. Clique em "Carregar planilha" ou adicione um dados.xlsx ao repositório.';
+  mk('c1',{type:'doughnut',data:{labels:R.map(x=>`${x[0]} (${x[1]})`),datasets:[{data:R.map(x=>x[1]),backgroundColor:PAL}]},options:{plugins:{legend:{position:'right'}}}});
+  mk('c2',hbar(M,PAL[1]));
+  mk('c3',hbar(L,PAL[2]));
+  mk('c4',{type:'bar',data:{labels:cic,datasets:[{label:'Retirados',data:cic.map(c=>n(v.ret,c)),backgroundColor:PAL[0],borderRadius:4},{label:'À mais',data:cic.map(c=>n(v.mais,c)),backgroundColor:PAL[1],borderRadius:4}]},
+    options:{plugins:{legend:{position:'bottom'}},layout:{padding:{top:18}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
+  tabelas();transportadora();faltantes();avarias();analise();valorGeral();
+}
+function tabelas(){
+  const VM=valMap(),q=$('#q').value.toLowerCase(),v=view(),f=a=>a.filter(x=>(x.id+' '+x.resp).toLowerCase().includes(q));
+  $('#t1').innerHTML=f(v.ret).map(x=>`<tr><td>${x.id}</td><td>${esc(x.resp)}</td><td>${esc(x.motivo)}</td><td>${esc(x.ciclo)}</td><td class="cv">${brl(VM.get(String(x.id)))}</td></tr>`).join('')||'<tr><td colspan="5">Nenhum registro</td></tr>';
+  $('#t2').innerHTML=f(v.mais).map(x=>`<tr><td>${x.id}</td><td>${esc(x.resp)}</td><td>${esc(x.ciclo)}</td><td class="cv">${brl(VM.get(String(x.id)))}</td></tr>`).join('')||'<tr><td colspan="4">Nenhum registro</td></tr>';
+}
+
+/* ---------- faltantes ---------- */
+const horaFmt=x=>x.at?new Date(x.at).toLocaleString('pt-BR'):'';
+function tabelaFalt(){
+  const VM=valMap(),q=$('#qf').value.toLowerCase(),v=view();
+  const a=v.falt.filter(x=>(x.id+' '+x.resp).toLowerCase().includes(q)).slice().reverse();
+  $('#t5').innerHTML=a.map(x=>`<tr><td>${x.id}</td><td>${esc(x.resp)}</td><td>${esc(x.transp)}</td><td>${esc(x.ciclo)}</td><td>${esc(horaFmt(x))}</td><td class="cv">${brl(VM.get(String(x.id)))}</td><td><button class="x" data-id="${x.id}" title="Remover" aria-label="Remover ${x.id}">×</button></td></tr>`).join('')||'<tr><td colspan="7">Nenhum faltante bipado</td></tr>';
+}
+function faltantes(){
+  const v=view(),L=cnt(v.falt,'resp'),T=cnt(v.falt,'transp'),C=cnt(v.falt,'ciclo').sort((a,b)=>a[0].localeCompare(b[0]));
+  const tl=L[0]||['-',0],tt=T[0]||['-',0];
+  $('#f1').textContent=v.falt.length;$('#tbn').textContent=v.falt.length;
+  $('#f2').textContent=tl[0];$('#f2s').textContent=v.falt.length?`${tl[1]} faltantes (${Math.round(tl[1]/v.falt.length*100)}%)`:'';
+  $('#f3').textContent=tt[0];$('#f3s').textContent=v.falt.length?`${tt[1]} faltantes`:'';
+  mk('c9',hbar(L,PAL[3]));
+  mk('c10',hbar(T,PAL[0]));
+  mk('c11',{type:'bar',data:{labels:C.map(x=>x[0]),datasets:[{data:C.map(x=>x[1]),backgroundColor:PAL[3],borderRadius:4}]},
+    options:{plugins:{legend:{display:false}},layout:{padding:{top:18}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
+  tabelaFalt();
+}
+
+/* ---------- avarias ---------- */
+function tabelaAvar(){
+  const VM=valMap(),q=$('#qa').value.toLowerCase(),v=view();
+  const a=v.avar.filter(x=>(x.id+' '+x.resp).toLowerCase().includes(q)).slice().reverse();
+  $('#t6').innerHTML=a.map(x=>`<tr><td>${x.id}</td><td>${esc(x.resp)}</td><td>${esc(x.transp)}</td><td>${esc(x.ciclo)}</td><td>${esc(horaFmt(x))}</td><td class="cv">${brl(VM.get(String(x.id)))}</td><td><button class="x" data-id="${x.id}" title="Remover" aria-label="Remover ${x.id}">×</button></td></tr>`).join('')||'<tr><td colspan="7">Nenhuma avaria bipada</td></tr>';
+}
+function avarias(){
+  const v=view(),L=cnt(v.avar,'resp'),T=cnt(v.avar,'transp'),C=cnt(v.avar,'ciclo').sort((a,b)=>a[0].localeCompare(b[0]));
+  const tl=L[0]||['-',0],tt=T[0]||['-',0];
+  $('#a1').textContent=v.avar.length;$('#tbna').textContent=v.avar.length;
+  $('#a2').textContent=tl[0];$('#a2s').textContent=v.avar.length?`${tl[1]} avarias (${Math.round(tl[1]/v.avar.length*100)}%)`:'';
+  $('#a3').textContent=tt[0];$('#a3s').textContent=v.avar.length?`${tt[1]} avarias`:'';
+  mk('c12',hbar(L,PAL[1]));
+  mk('c13',hbar(T,PAL[0]));
+  mk('c14',{type:'bar',data:{labels:C.map(x=>x[0]),datasets:[{data:C.map(x=>x[1]),backgroundColor:PAL[1],borderRadius:4}]},
+    options:{plugins:{legend:{display:false}},layout:{padding:{top:18}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
+  tabelaAvar();
+}
+
+/* ---------- planilha de auditoria: Físico x Sistêmica ---------- */
+const estNome=s=>{const k=semAc(s);return k==='correto'?'Correto':k==='faltante'?'Faltante':k==='a mais'?'À mais':(k?cap(String(s).trim()):'Sem estado')};
+function numBR(v){
+  if(typeof v==='number')return isFinite(v)?v:null;
+  let t=String(v==null?'':v).replace(/R\$|\s/g,'');if(!t)return null;
+  if(t.includes(',')&&t.includes('.'))t=t.replace(/\./g,'').replace(',','.');else if(t.includes(','))t=t.replace(',','.');
+  const n=parseFloat(t);return isFinite(n)?n:null;
+}
+const brl=v=>v==null?'-':'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const sm=a=>Math.round(a.reduce((t,x)=>t+(x.valor||0),0)*100)/100;
+function estSub(sub,status){const k=semAc(sub);if(/missing|faltante/.test(k))return'Faltante';if(/surplus|extra|excess|a mais/.test(k))return'À mais';return k?cap(String(sub).trim()):(status?cap(String(status).trim()):'Sem estado')}
+function parseAud(rows){
+  const hi=rows.findIndex(r=>r.some(c=>{const u=String(c).trim().toUpperCase();return /SHIPMENT/.test(u)||u==='ID DO ENVIO'}));
+  if(hi<0)return null;
+  const h=rows[hi].map(c=>String(c).trim().toUpperCase()),f=re=>h.findIndex(v=>re.test(v));
+  const ci=f(/SHIPMENT|^ID DO ENVIO$/),pi=f(/PLACA/),di=f(/DATA/),ri=f(/ROTA/),ei=f(/ESTADO/),ai=f(/REP/),vi=f(/VALOR/),sti=f(/^STATUS DO ENVIO/),sbi=f(/^SUB/);
+  if(ei<0&&sbi<0)return null;
+  const g=(r,i)=>i<0?'':String(r[i]??'').trim();
+  const M=new Map();let dup=0;
+  for(const r of rows.slice(hi+1)){
+    const m=String(r[ci]??'').match(/\d{8,}/);if(!m)continue;
+    if(M.has(m[0]))dup++;
+    M.set(m[0],{id:m[0],placa:g(r,pi)||'-',data:g(r,di),rota:g(r,ri)||'-',estado:ei>=0?estNome(r[ei]):estSub(g(r,sbi),g(r,sti)),rep:ai>=0?nome(r[ai]):'-',status:g(r,sti),sub:g(r,sbi),valor:vi>=0?numBR(r[vi]):null});
+  }
+  return{rows:[...M.values()],dup};
+}
+const horaDe=d=>{const m=String(d).match(/\s(\d{1,2}):/);return m?m[1].padStart(2,'0')+'h':'-'};
+function cruzar(){
+  const B=new Map(),add=(a,st)=>a.forEach(x=>{if(!B.has(x.id))B.set(x.id,{st,resp:x.resp,transp:x.transp,ciclo:x.ciclo})});
+  ['Retirado','À mais','Avaria','Faltante'].forEach(st=>add(BIP.filter(x=>x.status===st),st));
+  add(DATA.ret,'Retirado');add(DATA.mais,'À mais');
+  const fis=[],sis=[],EO=x=>({'Faltante':0,'À mais':1}[x.estado]??2);
+  (DATA.aud||[]).forEach(x=>{const b=B.get(x.id);b?fis.push({...x,st:b.st,resp:b.resp,transp:b.transp,ciclo:b.ciclo,sit:b.st===x.estado?'Confere':'Revisar',res:b.st===x.estado?`Confere: bipado como ${b.st} e a planilha também diz ${x.estado}.`:`Repetido: bipado como ${b.st}, mas a planilha diz ${x.estado}. Confira.`}):sis.push({...x,res:x.estado==='Correto'?'Só na planilha: auditado como Correto, sem bipagem.':`Só na planilha: consta ${x.estado}, mas o ID não foi bipado.`})});
+  sis.sort((a,b)=>EO(a)-EO(b));
+  const rid=new Set(REAT.map(r=>r.id));
+  return{fis,sis:sis.filter(x=>!rid.has(x.id))};
+}
+let CUR={fis:[],sis:[]};
+function tabelaFis(){
+  const q=$('#qp').value.toLowerCase();
+  const sf=$('#sfp').value,a=CUR.fis.filter(x=>(!sf||x.sit===sf)&&(x.id+' '+x.placa+' '+x.rota+' '+x.rep+' '+x.resp).toLowerCase().includes(q));
+  $('#t8').innerHTML=a.map(x=>`<tr><td>${x.id}</td><td>${esc(x.st)}</td><td>${esc(x.estado)}</td><td><b style="color:${x.sit==='Confere'?'#00864a':'#b8860b'}">${x.sit}</b></td><td>${esc(x.res)}</td><td>${esc(x.placa)}</td><td>${esc(x.rota)}</td><td>${esc(x.rep)}</td><td>${esc(x.resp)}</td><td>${esc(x.transp)}</td><td>${esc(x.ciclo)}</td><td>${esc(x.status?x.status+' / '+x.sub:'-')}</td><td>${brl(x.valor)}</td></tr>`).join('')||'<tr><td colspan="13">Nenhum ID repetido</td></tr>';
+}
+function visSis(){return sisFiltrado().slice(0,2000)}
+function sisFiltrado(){
+  const q=$('#qy').value.toLowerCase(),e=$('#sfe').value;
+  return CUR.sis.filter(x=>(!e||x.estado===e)&&(!SCIC||cicloRota(x.rota)===SCIC)&&(x.id+' '+x.placa+' '+x.rota+' '+x.rep).toLowerCase().includes(q));
+}
+function tabelaSist(){
+  const a=visSis();
+  $('#sn').textContent=a.length;
+  $('#t7').innerHTML=a.map(x=>`<tr data-id="${x.id}" class="${SELS.has(x.id)?'sel':''}"><td><input type="checkbox" class="ck" ${SELS.has(x.id)?'checked':''} aria-label="Selecionar ${x.id}"></td><td>${x.id}</td><td>${esc(x.estado)}</td><td>${esc(x.res)}</td><td>${esc(x.placa)}</td><td>${esc(x.rota)}</td><td>${esc(x.rep)}</td><td>${esc(x.data)}</td><td>${esc(x.status?x.status+' / '+x.sub:'-')}</td><td>${brl(x.valor)}</td></tr>`).join('')||'<tr><td colspan="10">Nenhum registro</td></tr>';
+  selUi();
+}
+function analise(){
+  CUR=cruzar();const{fis,sis}=CUR,all=DATA.aud||[];
+  const n=(a,e)=>a.filter(x=>x.estado===e).length,st=s=>fis.filter(x=>x.st===s).length;
+  $('#tbnp').textContent=fis.length;$('#tbns').textContent=sis.length;
+  document.body.classList.toggle('semrota',all.length>0&&all.every(x=>x.placa==='-'&&x.rota==='-'&&x.rep==='-'));
+  {const hv=all.some(x=>x.valor!=null);document.querySelectorAll('.vk').forEach(e=>e.hidden=!hv);
+   if(hv){$('#v1').textContent=brl(sm(all));$('#v2').textContent=brl(sm(fis.filter(x=>x.sit==='Confere')));$('#v3').textContent=brl(sm(fis.filter(x=>x.sit==='Revisar')));$('#v4').textContent=brl(sm(sis))}}
+  const msg=all.length?`Fonte: ${AUDSRC}. ${DATA.audDup?DATA.audDup+' ID(s) duplicado(s) na planilha contado(s) uma vez. ':''}IDs que também foram bipados (Retirado, À mais, Avaria ou Faltante) vão para Físico; os demais ficam em Sistêmica. O filtro de ciclo não vale para estas abas.`:'Nenhuma planilha de auditoria carregada. Use Menu > Carregar planilha e escolha o arquivo CSV.';
+  $('#fmsg').textContent=msg;$('#smsg').textContent=msg;
+  $('#p1').textContent=fis.length;$('#p2').textContent=st('Retirado');$('#p3').textContent=st('À mais');$('#p4').textContent=st('Avaria');$('#p5').textContent=st('Faltante');$('#p6').textContent=fis.filter(x=>x.sit==='Revisar').length;
+  $('#y1').textContent=all.length;$('#y1s').textContent=all.length?`${n(all,'Correto')} corretos · ${n(all,'À mais')} à mais · ${n(all,'Faltante')} faltantes`:'';
+  $('#y2').textContent=fis.length;$('#y3').textContent=sis.length;$('#y4').textContent=n(sis,'À mais');$('#y5').textContent=n(sis,'Faltante');
+  const E=cnt(sis,'estado'),H=cnt(sis.map(x=>({h:horaDe(x.data)})),'h').sort((a,b)=>a[0].localeCompare(b[0]));
+  mk('c15',{type:'doughnut',data:{labels:E.map(x=>`${x[0]} (${x[1]})`),datasets:[{data:E.map(x=>x[1]),backgroundColor:PAL}]},options:{plugins:{legend:{position:'right'}}}});
+  mk('c16',hbar(cnt(sis,'placa').slice(0,12),PAL[0]));
+  mk('c17',hbar(cnt(sis,'rep').slice(0,12),PAL[2]));
+  mk('c18',{type:'bar',data:{labels:H.map(x=>x[0]),datasets:[{data:H.map(x=>x[1]),backgroundColor:PAL[1],borderRadius:4}]},
+    options:{plugins:{legend:{display:false}},layout:{padding:{top:18}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
+  const S=cnt(fis,'st');
+  mk('c19',{type:'doughnut',data:{labels:S.map(x=>`${x[0]} (${x[1]})`),datasets:[{data:S.map(x=>x[1]),backgroundColor:PAL}]},options:{plugins:{legend:{position:'right'}}}});
+  mk('c20',hbar(cnt(fis,'estado'),PAL[3]));
+  chipsSis();tabelaFis();tabelaSist();tabelaReat();$('#y6').textContent=REAT.length;
+}
+
+/* ---------- transportadora ---------- */
+function transportadora(){
+  const v=view(),R=cnt(v.ret,'transp'),L=cnt(v.mais,'transp');
+  const tot=t=>v.ret.filter(x=>x.transp===t).length+v.mais.filter(x=>x.transp===t).length;
+  const nomes=[...new Set([...v.ret,...v.mais].map(x=>x.transp))].sort((a,b)=>tot(b)-tot(a)||a.localeCompare(b));
+  const ok=nomes;
+  const top=a=>a[0]||['-',0];
+  const tr=top(R),tl=top(L);
+  $('#ktr').innerHTML=`<div class="card kpi"><span>Transportadoras</span><b>${ok.length}</b><i>Com pacotes registrados</i></div>
+    <div class="card kpi"><span>Mais retiradas</span><b style="font-size:1.4rem;margin-top:10px">${esc(tr[0])}</b><i>${tr[1]} pacotes retirados</i></div>
+    <div class="card kpi"><span>Mais à mais</span><b style="font-size:1.4rem;margin-top:10px">${esc(tl[0])}</b><i>${tl[1]} pacotes à mais</i></div>
+`;
+  mk('c6',hbar(R,PAL[0]));
+  mk('c7',hbar(L,PAL[1]));
+  mk('c8',{type:'bar',data:{labels:nomes,datasets:[{label:'Retirados',data:nomes.map(t=>v.ret.filter(x=>x.transp===t).length),backgroundColor:PAL[0],borderRadius:4},{label:'À mais',data:nomes.map(t=>v.mais.filter(x=>x.transp===t).length),backgroundColor:PAL[1],borderRadius:4}]},
+    options:{plugins:{legend:{position:'bottom'}},layout:{padding:{top:18}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
+  $('#t4').innerHTML=nomes.map(t=>{const a=v.ret.filter(x=>x.transp===t).length,b=v.mais.filter(x=>x.transp===t).length;return `<tr><td>${esc(t)}</td><td>${a}</td><td>${b}</td><td><b>${a+b}</b></td></tr>`}).join('')||'<tr><td colspan="4">Nenhum registro</td></tr>';
+}
+
+/* ---------- relatório PDF ---------- */
+function tbl(d,y,ttl,head,rows,w){
+  const M=14,hdr=()=>{d.setFillColor(45,50,119);d.rect(M,y,182,7,'F');d.setTextColor(255);d.setFont('helvetica','bold');d.setFontSize(9);
+    let x=M+2;head.forEach((t,i)=>{d.text(t,x,y+4.8);x+=w[i]});y+=7;d.setFont('helvetica','normal');d.setTextColor(30)};
+  if(y>260){d.addPage();y=18}
+  d.setFont('helvetica','bold');d.setFontSize(12);d.setTextColor(45,50,119);d.text(ttl,M,y);y+=4;hdr();
+  if(!rows.length){d.text('Nenhum registro',M+2,y+4.5);return y+12}
+  rows.forEach((r,j)=>{
+    if(y>282){d.addPage();y=18;hdr()}
+    if(j%2){d.setFillColor(244,245,250);d.rect(M,y,182,6,'F')}
+    let x=M+2;r.forEach((c,i)=>{d.text(String(c),x,y+4.2);x+=w[i]});y+=6});
+  return y+10;
+}
+function gerarPDF(sel){
+  sel=sel instanceof Set?sel:null;const ok=k=>!sel||sel.has(k);
+  const {jsPDF}=window.jspdf,d=new jsPDF({unit:'mm',format:'a4'}),W=210,M=14,v=view();const VM=valMap(),hv=VM.size>0,vv=x=>hv?[brl(VM.get(String(x.id)))]:[];
+  const R=cnt(v.ret,'resp'),Mo=cnt(v.ret,'motivo'),L=cnt(v.mais,'resp');
+  // cabeçalho
+  d.setFillColor(45,50,119);d.rect(0,0,W,30,'F');d.setFillColor(255,230,0);d.rect(0,30,W,1.6,'F');
+  d.setTextColor(255);d.setFont('helvetica','bold');d.setFontSize(18);d.text('Relatório de PCTS Retirados e à Mais',M,14);
+  d.setFont('helvetica','normal');d.setFontSize(10);
+  d.text('Gerado em '+new Date().toLocaleString('pt-BR')+'  |  Ciclo: '+(v.c||'Todos'),M,22);
+  let y=40;
+  if(ok('geral')){
+  // KPIs
+  const k=[['Retirados',v.ret.length],['À mais',v.mais.length],['Retirados - à mais',v.ret.length-v.mais.length],['Maior responsável',(R[0]||['-'])[0]]];
+  const kw=(W-2*M-9)/4;
+  k.forEach((x,i)=>{const X=M+i*(kw+3);d.setFillColor(244,245,250);d.roundedRect(X,38,kw,20,2,2,'F');
+    d.setTextColor(107,112,144);d.setFontSize(8);d.text(x[0].toUpperCase(),X+3,44);
+    d.setTextColor(45,50,119);d.setFont('helvetica','bold');d.setFontSize(i==3?11:18);d.text(String(x[1]),X+3,53);d.setFont('helvetica','normal')});
+  // gráficos 2x2
+  y=66;const cw=(W-2*M-6)/2;
+  [['c1','Retirados por responsável (MELI)'],['c2','Retirados por motivo'],['c3','À mais por responsável (LOG)'],['c4','Retirados x à mais por ciclo']].forEach((g,i)=>{
+    const cv=$('#'+g[0]),h=cw*cv.height/cv.width,X=M+(i%2)*(cw+6);
+    d.setTextColor(30);d.setFont('helvetica','bold');d.setFontSize(10);d.text(g[1],X,y);
+    d.setDrawColor(228,230,240);d.roundedRect(X,y+2,cw,h+2,2,2,'S');
+    d.addImage(cv.toDataURL('image/png',1),'PNG',X+1,y+3,cw-2,h);
+    if(i%2){y+=Math.max(h,cw*$('#'+['c1','c2','c3','c4'][i-1]).height/$('#'+['c1','c2','c3','c4'][i-1]).width)+12}});
+  // destaques
+  const p=(a,t)=>t?Math.round(a/t*100):0,T=R[0]||['-',0],Mt=Mo[0]||['-',0],Lt=L[0]||['-',0],Ft=cnt(v.falt,'resp')[0]||['-',0],At=cnt(v.avar,'resp')[0]||['-',0];
+  d.setFont('helvetica','bold');d.setFontSize(12);d.setTextColor(45,50,119);d.text('Destaques',M,y);y+=6;
+  d.setFont('helvetica','normal');d.setFontSize(10);d.setTextColor(30);
+  [`- ${v.ret.length} pacotes retirados; ${T[0]} respondeu por ${T[1]} (${p(T[1],v.ret.length)}%).`,
+   `- Principal motivo: ${Mt[0]} (${Mt[1]} ocorrências, ${p(Mt[1],v.ret.length)}%).`,
+   `- ${v.mais.length} pacotes à mais; maior incidência LOG: ${Lt[0]} (${Lt[1]}).`,
+   `- ${v.falt.length} pacotes faltantes; maior incidência LOG: ${Ft[0]} (${Ft[1]}).`,
+   `- ${v.avar.length} pacotes com avaria; maior incidência LOG: ${At[0]} (${At[1]}).`,...(hv?[(()=>{const a=valSoma(v.ret,VM),b=valSoma(v.mais,VM),c=valSoma(v.falt,VM),e=valSoma(v.avar,VM);return '- Valor declarado: retirados '+brl(a.t)+' | à mais '+brl(b.t)+' | faltantes '+brl(c.t)+' | avarias '+brl(e.t)+'.'})()]:[])].forEach(s=>{d.text(s,M,y);y+=6});
+  d.addPage();y=18;
+  }
+  // tabelas
+
+  if(ok('geral'))y=tbl(d,y,'Pacotes retirados',['ID','Responsável','Motivo','Ciclo',...(hv?['Valor']:[])],v.ret.map(x=>[x.id,x.resp,x.motivo,x.ciclo,...vv(x)]),hv?[32,34,60,24,32]:[38,40,76,28]);
+  if(ok('geral'))y=tbl(d,y,'Pacotes à mais',['ID','Responsável LOG','Ciclo',...(hv?['Valor']:[])],v.mais.map(x=>[x.id,x.resp,x.ciclo,...vv(x)]),hv?[38,74,32,38]:[38,106,38]);
+  if(ok('falt'))y=tbl(d,y,'Pacotes faltantes',['ID','Responsável LOG','Transportadora','Ciclo',...(hv?['Valor']:[])],v.falt.map(x=>[x.id,x.resp,x.transp,x.ciclo,...vv(x)]),hv?[34,48,46,22,32]:[38,60,56,28]);
+  if(ok('avar'))y=tbl(d,y,'Pacotes com avaria',['ID','Responsável LOG','Transportadora','Ciclo',...(hv?['Valor']:[])],v.avar.map(x=>[x.id,x.resp,x.transp,x.ciclo,...vv(x)]),hv?[34,48,46,22,32]:[38,60,56,28]);
+  const fa=filtrosAtivos(),ft=n=>{const f=fa.find(z=>z[0]===n);return f?' ['+f[1]+']':''},cut=(t,n)=>{t=String(t==null?'':t);return t.length>n?t.slice(0,n-1)+'.':t},LIM=400;
+  if(ok('fis')){const F=cruzar().fis;y=tbl(d,y,'Físico - '+F.length+' ID'+(F.length===1?'':'s')+(F.some(x=>x.valor!=null)?' - '+brl(sm(F)):''),['ID','Status bipado','Estado','Situação','Valor declarado'],F.slice(0,LIM).map(x=>[x.id,x.st,cut(x.estado,16),cut(x.sit,12),brl(x.valor)]),[38,34,34,28,48])}
+  if((DATA.aud||[]).length&&ok('sist')){
+    const S=sisFiltrado();
+    y=tbl(d,y,'Sistêmica'+ft('Sistêmica')+' - '+S.length+' ID'+(S.length===1?'':'s')+(S.some(x=>x.valor!=null)?' - '+brl(sm(S)):''),['ID','Estado',S.some(x=>x.status)?'Status do envio':'Placa','Rota','Valor declarado'],S.slice(0,LIM).map(x=>[x.id,x.estado,cut(x.status?x.status+' / '+x.sub:x.placa,22),cut(x.rota,18),brl(x.valor)]),[34,22,48,30,48]);
+    if(S.length>LIM){d.setFontSize(9);d.setTextColor(90);d.text('Mostrando '+LIM+' de '+S.length+'. A lista completa está no Excel.',M,y-6)}
+  }
+  if(DESC.length&&ok('desc')){
+    const Q=visDesc();
+    y=tbl(d,y,'Desconteinerizado'+ft('Desconteinerizado')+' - '+Q.length+' ID'+(Q.length===1?'':'s'),['ID do pacote','Estado','Problem solver','Dia','Motivo'],Q.slice(0,LIM).map(x=>[x.id,x.estado,cut(x.solver,26),x.dia,cut(x.motivo,26)]),[34,24,56,18,50]);
+    if(Q.length>LIM){d.setFontSize(9);d.setTextColor(90);d.text('Mostrando '+LIM+' de '+Q.length+'. A lista completa está no Excel.',M,y-6)}
+  }
+  // rodapé
+  const n=d.getNumberOfPages();
+  for(let i=1;i<=n;i++){d.setPage(i);d.setFontSize(8);d.setTextColor(140);d.text(`Página ${i} de ${n}  |  Fonte: ${SRC}`,M,291)}
+  d.save('relatorio-pcts-'+new Date().toISOString().slice(0,10)+'.pdf');
+}
+
+/* ---------- bipar IDs ---------- */
+let BIP=[];
+try{BIP=JSON.parse(localStorage.getItem('pcts_bip')||'[]')}catch(e){BIP=[]}
+const saveBip=()=>{try{localStorage.setItem('pcts_bip',JSON.stringify(BIP))}catch(e){}};
+const canonMot=s=>{const k=semAc(s);return k==='nao cabe no veiculo'?'Não cabe no veículo':k==='area bloqueada'?'Área bloqueada':k==='fora de area'?'Fora de área':k==='autorizado a retirada'?'Autorizado a retirada':k==='inclusao manual'?'Inclusão manual':k==='pcts sem atrelar'||k==='pct sem atrelar'?'PCTs sem atrelar':s};
+const baseAll=()=>[...DATA.ret,...DATA.mais,...(DATA.mov||[])];
+function refreshFc(){
+  const cur=$('#fc').value;
+  const cs=[...new Set([...baseAll(),...BIP].map(x=>x.ciclo))].sort();
+  $('#fc').innerHTML='<option value="">Todos os ciclos</option>'+cs.map(c=>`<option>${esc(c)}</option>`).join('');
+  if(cs.includes(cur))$('#fc').value=cur;
+}
+function bipLabels(){
+  const st=$('#bs').value,r=st==='Retirado';
+  $('#bl').textContent=r?'MELI responsável':'LOG responsável';
+  $('#bmw').hidden=!r;
+  const src=r?[...DATA.ret,...BIP.filter(x=>x.status==='Retirado')]:[...(st==='À mais'?DATA.mais:[]),...BIP.filter(x=>x.status===st)];
+  const names=[...new Set(src.map(x=>x.resp).filter(n=>n&&n!=='Não informado'))];
+  $('#brl').innerHTML=names.map(n=>`<option value="${esc(n)}">`).join('');
+  const all=[...baseAll(),...BIP];
+  const cic=[...new Set(['AM','PM','SD',...all.map(x=>x.ciclo).filter(c=>c&&c!=='Sem ciclo')])];
+  $('#bcl').innerHTML=cic.map(c=>`<option value="${esc(c)}">`).join('');
+  const tr=[...new Set(all.map(x=>x.transp).filter(t=>t&&t!==NI))];
+  $('#btl').innerHTML=tr.map(t=>`<option value="${esc(t)}">`).join('');
+}
+function bipLista(){
+  const R=BIP.filter(x=>x.status==='Retirado'),L=BIP.filter(x=>x.status==='À mais'),F=BIP.filter(x=>x.status==='Faltante'),A=BIP.filter(x=>x.status==='Avaria');
+  $('#bn1').textContent=R.length;$('#bn2').textContent=L.length;$('#bn3').textContent=F.length;$('#bn4').textContent=A.length;
+  const row=x=>`<tr><td>${x.id}</td><td>${esc(x.resp)}</td><td>${esc(x.transp)}</td><td>${esc(x.ciclo)}</td><td><button class="x" data-id="${x.id}" title="Remover" aria-label="Remover ${x.id}">×</button></td></tr>`;
+  $('#bt1').innerHTML=R.slice().reverse().map(row).join('')||'<tr><td colspan="5">Nenhum ID bipado</td></tr>';
+  $('#bt2').innerHTML=L.slice().reverse().map(row).join('')||'<tr><td colspan="5">Nenhum ID bipado</td></tr>';
+  $('#bt3').innerHTML=F.slice().reverse().map(row).join('')||'<tr><td colspan="5">Nenhum ID bipado</td></tr>';
+  $('#bt4').innerHTML=A.slice().reverse().map(row).join('')||'<tr><td colspan="5">Nenhum ID bipado</td></tr>';
+}
+function bipAplicar(){saveBip();refreshFc();bipLista();bipLabels();render()}
+function bipMsg(t,c){const m=$('#bmsg');m.textContent=t;m.className=c||''}
+function bipIds(raw){
+  const o=[];
+  String(raw).split(/[\s,;]+/).filter(Boolean).forEach(t=>{
+    const m=t.match(/\d{8,}/g);
+    if(m)o.push(...m);
+    else{const d=t.replace(/\D/g,'');if(d.length>=8)o.push(d)}
+  });
+  return[...new Set(o)];
+}
+function bipAdd(){
+  const ids=bipIds($('#bid').value);
+  if(!ids.length){bipMsg('Digite ou bipe um ID válido (8 dígitos ou mais).','bad');return}
+  const st=$('#bs').value,ex=new Map([...baseAll(),...BIP].map(x=>[x.id,x]));
+  const base={status:st,resp:nome($('#br').value),transp:canonTr($('#bt').value),ciclo:String($('#bc').value).trim().toUpperCase()||'Sem ciclo',motivo:st==='Retirado'?(cap(String($('#bmot').value).trim())||'Não informado'):'',at:new Date().toISOString()};
+  let ok=0;const dup=[];
+  ids.forEach(id=>{if(ex.has(id))dup.push(id);else{BIP.push({...base,id});ex.set(id,base);ok++}});
+  $('#bid').value='';
+  bipAplicar();
+  const p=[];
+  if(ok)p.push(`${ok} ID${ok>1?'s':''} adicionado${ok>1?'s':''} como ${st}.`);
+  if(dup.length)p.push(`Já existe${dup.length>1?'m':''} no Dashboard: ${dup.join(', ')}.`);
+  bipMsg(p.join(' '),dup.length&&!ok?'bad':'ok');
+  $('#bid').focus();
+}
+const bipTitulo=()=>{const v=$('#bs').value;$('#bmt').textContent=v==='Faltante'?'Bipar faltantes':v==='Avaria'?'Bipar avarias':'Bipar IDs'};
+function bipAbrir(s){
+  if(s)$('#bs').value=s;
+  bipTitulo();
+  $('#bm').hidden=false;bipLabels();bipLista();bipMsg('');setTimeout(()=>$('#bid').focus(),0)}
+function bipFechar(){$('#bm').hidden=true;$('#mnb').focus()}
+let clrT;
+$('#bip').onclick=()=>bipAbrir();
+$('#bfa2').onclick=()=>bipAbrir('Faltante');
+$('#bav2').onclick=()=>bipAbrir('Avaria');
+$('#bx').onclick=bipFechar;$('#bdone').onclick=bipFechar;
+$('#bs').onchange=()=>{bipTitulo();bipLabels();$('#bid').focus()};
+$('#ba').onclick=bipAdd;
+$('#bid').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();bipAdd()}};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#bm').hidden)bipFechar()});
+$('#bm').addEventListener('click',e=>{
+  if(e.target===$('#bm'))bipFechar();
+  const id=e.target.dataset&&e.target.dataset.id;
+  if(id){BIP=BIP.filter(x=>x.id!==id);bipAplicar();bipMsg('ID '+id+' removido.')}
+});
+$('#t5').addEventListener('click',e=>{
+  const id=e.target.dataset&&e.target.dataset.id;
+  if(id&&confirm('Remover o faltante '+id+'?')){BIP=BIP.filter(x=>x.id!==id);bipAplicar()}
+});
+$('#t6').addEventListener('click',e=>{
+  const id=e.target.dataset&&e.target.dataset.id;
+  if(id&&confirm('Remover a avaria '+id+'?')){BIP=BIP.filter(x=>x.id!==id);bipAplicar()}
+});
+$('#bclr').onclick=()=>{
+  const b=$('#bclr');
+  if(b.dataset.c){clearTimeout(clrT);delete b.dataset.c;b.textContent='Limpar bipados';BIP=[];bipAplicar();bipMsg('Lista de bipados limpa.');return}
+  b.dataset.c=1;b.textContent='Confirmar: limpar tudo?';clrT=setTimeout(()=>{delete b.dataset.c;b.textContent='Limpar bipados'},4000);
+};
+
+/* ---------- exportar relatório em Excel ---------- */
+const XHR=['ID','MELI responsável','Motivo','Transportadora','Ciclo','Bipado em'];
+const XHM=['ID','LOG responsável','Transportadora','Ciclo','Bipado em'];
+const BF=()=>{const c=$('#fc').value;return c?BIP.filter(x=>x.ciclo===c):BIP};
+function excelRows(){
+  const ord=(a,b)=>String(a.ciclo).localeCompare(String(b.ciclo))||String(a.at).localeCompare(String(b.at));
+  const hora=horaFmt,VM=valMap(),hv=VM.size>0;
+  const ret=BF().filter(x=>x.status==='Retirado').sort(ord).map(x=>[String(x.id),x.resp||'',x.motivo||'',x.transp||NI,x.ciclo||'',hora(x),...(hv?[VM.get(String(x.id))??'']:[])]);
+  const mais=BF().filter(x=>x.status==='À mais').sort(ord).map(x=>[String(x.id),x.resp||'',x.transp||NI,x.ciclo||'',hora(x),...(hv?[VM.get(String(x.id))??'']:[])]);
+  const falt=BF().filter(x=>x.status==='Faltante').sort(ord).map(x=>[String(x.id),x.resp||'',x.transp||NI,x.ciclo||'',hora(x),...(hv?[VM.get(String(x.id))??'']:[])]);
+  const avar=BF().filter(x=>x.status==='Avaria').sort(ord).map(x=>[String(x.id),x.resp||'',x.transp||NI,x.ciclo||'',hora(x),...(hv?[VM.get(String(x.id))??'']:[])]);
+  return{ret,mais,falt,avar};
+}
+function exportarExcel(sel){
+  sel=sel instanceof Set?sel:null;const ok=k=>!sel||sel.has(k);
+  const{ret,mais,falt,avar}=excelRows(),hv=valMap().size>0;
+  const folha=(h,rows,w)=>{const s=XLSX.utils.aoa_to_sheet([h,...rows]);s['!cols']=w.map(wch=>({wch}));return s};
+  const wb=XLSX.utils.book_new();
+  const fa=filtrosAtivos();
+  if(fa.length)XLSX.utils.book_append_sheet(wb,folha(['Onde','Filtro aplicado'],fa,[48,70]),'Filtros aplicados');
+  const au=DATA.aud||[],cz=cruzar(),nE=e=>au.filter(x=>x.estado===e).length;
+  if(au.length&&(ok('sist')||ok('fis'))){
+    const R=[['Resumo da comparação'],[],['Planilha de auditoria',AUDSRC],['Total de IDs na planilha',au.length],['   Corretos',nE('Correto')],['   À mais',nE('À mais')],['   Faltantes',nE('Faltante')],['IDs duplicados na planilha (contados uma vez)',DATA.audDup||0],[],['Repetidos: estão na planilha e foram bipados (aba Físico)',cz.fis.length],['   Confere (status bipado igual ao estado da planilha)',cz.fis.filter(x=>x.sit==='Confere').length],['   Revisar (status bipado diferente do estado)',cz.fis.filter(x=>x.sit==='Revisar').length],['Só na planilha, não bipados (aba Sistêmica)',cz.sis.length],...(au.some(x=>x.valor!=null)?[[],['Valor declarado total (R$)',sm(au)],['   Conferido (Físico: Confere)',sm(cz.fis.filter(x=>x.sit==='Confere'))],['   A revisar (Físico: Revisar)',sm(cz.fis.filter(x=>x.sit==='Revisar'))],['   Só na planilha, não bipados',sm(cz.sis)]]:[]),[],['Como a comparação funciona'],['O número do ID de cada linha da planilha é procurado entre os IDs bipados (Retirado, À mais, Avaria, Faltante) e os retirados/à mais da planilha principal.'],['Se o ID aparece nos dois lugares, ele vai para a aba Físico. Se aparece só na planilha, fica na aba Sistêmica.'],['Situação Confere: status bipado igual ao estado da planilha. Situação Revisar: são diferentes; veja a coluna Resultado.']];
+    const sr=XLSX.utils.aoa_to_sheet(R);sr['!cols']=[{wch:70},{wch:34}];XLSX.utils.book_append_sheet(wb,sr,'Resumo');
+  }
+  if(ok('geral'))XLSX.utils.book_append_sheet(wb,folha(hv?[...XHR,'Valor declarado']:XHR,ret,[16,30,24,22,10,20,16]),'Retirados');
+  if(ok('geral'))XLSX.utils.book_append_sheet(wb,folha(hv?[...XHM,'Valor declarado']:XHM,mais,[16,30,22,10,20,16]),'À mais');
+  if(ok('falt'))XLSX.utils.book_append_sheet(wb,folha(hv?[...XHM,'Valor declarado']:XHM,falt,[16,30,22,10,20,16]),'Faltantes');
+  if(ok('avar'))XLSX.utils.book_append_sheet(wb,folha(hv?[...XHM,'Valor declarado']:XHM,avar,[16,30,22,10,20,16]),'Avarias');
+  if(au.length){
+    if(ok('fis'))XLSX.utils.book_append_sheet(wb,folha(['ID','Status bipado','Estado na planilha','Situação','Resultado','Placa','Rota','Rep auditoria','Responsável','Transportadora','Ciclo','Data auditoria','Status do envio','Valor declarado'],cz.fis.map(x=>[x.id,x.st,x.estado,x.sit,x.res,x.placa,x.rota,x.rep,x.resp,x.transp,x.ciclo,x.data,x.status?x.status+' / '+x.sub:'',x.valor==null?'':x.valor]),[14,14,18,11,62,12,24,34,24,20,8,20,22,16]),'Físico');
+    if(ok('sist'))XLSX.utils.book_append_sheet(wb,folha(['ID','Estado','Resultado','Placa','Rota','Rep auditoria','Data auditoria','Status do envio','Valor declarado'],sisFiltrado().map(x=>[x.id,x.estado,x.res,x.placa,x.rota,x.rep,x.data,x.status?x.status+' / '+x.sub:'',x.valor==null?'':x.valor]),[14,10,56,12,24,34,20,22,16]),'Sistêmica');
+  }
+  if(REAT.length&&ok('sist'))XLSX.utils.book_append_sheet(wb,folha(['ID','Estado','Resultado','Placa','Rota','Rep auditoria','Data auditoria','Movido em','Status do envio','Valor declarado'],reatFiltrado().map(x=>[x.id,x.estado,x.res,x.placa,x.rota,x.rep,x.data,horaFmt({at:x.at}),x.status?x.status+' / '+x.sub:'',x.valor==null?'':x.valor]),[14,10,56,12,24,34,20,20,22,16]),'Pacotes movimentados');
+  if(DESC.length&&ok('desc'))XLSX.utils.book_append_sheet(wb,folha(['ID do pacote','Estado','Problem solver','Criação','Motivo da exclusão'],visDesc().map(x=>[x.id,x.estado,x.solver,x.data,x.motivo]),[16,12,34,20,26]),'Desconteinerizado');
+  if(REATD.length&&ok('desc'))XLSX.utils.book_append_sheet(wb,folha(['ID do pacote','Estado','Problem solver','Motivo da exclusão','Criação','Movido em'],reatdFiltrado().map(x=>[x.id,x.estado,x.solver,x.motivo,x.data,horaFmt({at:x.at})]),[16,12,34,26,20,20]),'Reatribuição');
+  if(wb.SheetNames&&!wb.SheetNames.length){alert('Não há dados para exportar nas abas escolhidas.');return}
+  XLSX.writeFile(wb,'relatorio-pcts-'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
+$('#xls').onclick=exportarExcel;$('#bxl').onclick=exportarExcel;
+
+/* ---------- movimentação: Sistêmica -> Pacotes movimentados (Reatribuição) ---------- */
+const SELS=new Set(),SELR=new Set();
+let REAT=[];
+try{REAT=JSON.parse(localStorage.getItem('pcts_reat')||'[]')}catch(e){REAT=[]}
+const saveReat=()=>{try{localStorage.setItem('pcts_reat',JSON.stringify(REAT))}catch(e){}};
+function rmsg(t,c){const m=$('#rmsg');m.textContent=t;m.className=c||''}
+function selUi(){
+  const a=visSis();
+  $('#selc').textContent=SELS.size+(SELS.size===1?' selecionado':' selecionados');
+  $('#mvb').disabled=!SELS.size;
+  $('#mvb').textContent=SELS.size?`Mover ${SELS.size} para Reatribuição →`:'Mover para Reatribuição →';
+  $('#sela').checked=a.length>0&&a.every(x=>SELS.has(x.id));
+  $('#rselc').textContent=SELR.size+(SELR.size===1?' selecionado':' selecionados');
+  $('#rvb').disabled=!SELR.size;
+  $('#rsela').checked=REAT.length>0&&REAT.every(x=>SELR.has(x.id));
+}
+function tabelaReat(){
+  $('#rn').textContent=REAT.length;
+  $('#t9').innerHTML=REAT.slice().reverse().map(x=>`<tr data-id="${x.id}" class="${SELR.has(x.id)?'sel':''}"><td><input type="checkbox" class="ck" ${SELR.has(x.id)?'checked':''} aria-label="Selecionar ${x.id}"></td><td>${x.id}</td><td>${esc(x.estado)}</td><td>${esc(x.placa)}</td><td>${esc(x.rota)}</td><td>${esc(x.rep)}</td><td>${esc(x.data)}</td><td>${esc(horaFmt({at:x.at}))}</td><td>${brl(x.valor)}</td></tr>`).join('')||'<tr><td colspan="9">Nenhum ID movido. Selecione IDs na tabela ao lado e clique em Mover.</td></tr>';
+  selUi();
+}
+function linhaClick(set,e){
+  const tr=e.target.closest('tr[data-id]');if(!tr)return;
+  const id=tr.dataset.id,on=e.target.matches('input.ck')?e.target.checked:!set.has(id);
+  on?set.add(id):set.delete(id);
+  tr.classList.toggle('sel',on);tr.querySelector('input.ck').checked=on;selUi();
+}
+$('#t7').addEventListener('click',e=>linhaClick(SELS,e));
+$('#t9').addEventListener('click',e=>linhaClick(SELR,e));
+$('#sela').onchange=e=>{visSis().forEach(x=>e.target.checked?SELS.add(x.id):SELS.delete(x.id));tabelaSist()};
+$('#rsela').onchange=e=>{REAT.forEach(x=>e.target.checked?SELR.add(x.id):SELR.delete(x.id));tabelaReat()};
+$('#mvb').onclick=()=>{
+  const now=new Date().toISOString();let n=0;
+  CUR.sis.filter(x=>SELS.has(x.id)).forEach(x=>{if(!REAT.some(r=>r.id===x.id)){REAT.push({id:x.id,estado:x.estado,res:x.res,placa:x.placa,rota:x.rota,rep:x.rep,data:x.data,status:x.status,sub:x.sub,valor:x.valor,at:now});n++}});
+  SELS.clear();saveReat();analise();
+  rmsg(`${n} ID${n===1?'':'s'} movido${n===1?'':'s'} para Pacotes movimentados (Reatribuição).`,'ok');
+};
+$('#rvb').onclick=()=>{
+  const n=SELR.size;REAT=REAT.filter(x=>!SELR.has(x.id));SELR.clear();saveReat();analise();
+  rmsg(`${n} ID${n===1?'':'s'} devolvido${n===1?'':'s'} para a Sistêmica.`,'ok');
+};
+
+/* ---------- desconteinerizado: arquivo do problem solving + Reatribuição ---------- */
+function parseDesc(rows){
+  const hi=rows.findIndex(r=>r.some(c=>/^ID DO PACOTE$/.test(String(c).trim().toUpperCase())));
+  if(hi<0)return null;
+  const h=rows[hi].map(c=>String(c).trim().toUpperCase()),f=re=>h.findIndex(v=>re.test(v));
+  const ci=f(/^ID DO PACOTE$/),ei=f(/^ESTADO$/),si=f(/PROBLEM SOLVER/),di=f(/CRIA/),mi=f(/EXCLUS/),li=f(/LINK/),pi=f(/^PROBLEMA$/),ri=f(/CICLO|ROTA/);
+  const M=new Map();let dup=0;
+  for(const r of rows.slice(hi+1)){
+    const m=String(r[ci]??'').match(/\d{8,}/);if(!m)continue;
+    if(M.has(m[0])){dup++;continue}
+    const dt=String(r[di]??'').trim(),dm=dt.match(/\|\s*(\d{1,2}\/\w+)/);
+    M.set(m[0],{id:m[0],estado:cap(String(r[ei]??'').trim())||'Sem estado',solver:nome(r[si]),data:dt,dia:dm?dm[1]:'-',motivo:cap(String(r[mi]??'').trim())||'Não informado',link:String(r[li]??'').trim(),prob:String(r[pi]??'').trim(),cic:ri>=0?cicloTxt(r[ri]):''});
+  }
+  return{rows:[...M.values()],dup};
+}
+let DESC=[],DESCDUP=0,DESCSRC='';
+const SELD=new Set(),SELDR=new Set();
+let REATD=[];
+try{REATD=JSON.parse(localStorage.getItem('pcts_reatd')||'[]')}catch(e){REATD=[]}
+const saveReatD=()=>{try{localStorage.setItem('pcts_reatd',JSON.stringify(REATD))}catch(e){}};
+function dmsg(t,c){const m=$('#drmsg');m.textContent=t;m.className=c||''}
+function carregarDesc(buf,name){
+  try{
+    const wb=/\.csv$/i.test(name||'')?XLSX.read(new TextDecoder('utf-8').decode(buf),{type:'string',raw:true}):XLSX.read(buf,{type:'array'});
+    const d=parseDesc(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:''}));
+    if(!d)throw new Error('cabeçalho "ID do pacote" não encontrado');
+    DESC=d.rows;DESCDUP=d.dup;DESCSRC=name;SELD.clear();
+    const ms=[...new Set(DESC.map(x=>x.motivo))].sort();
+    $('#sfmd').innerHTML='<option value="">Todos os motivos</option>'+ms.map(x=>`<option>${esc(x)}</option>`).join('');
+    montaDias();descRender();abaTrocar('desc');
+  }catch(e){alert('Não consegui ler o arquivo: '+e.message)}
+}
+const descLista=()=>{const r=new Set(REATD.map(x=>x.id));return DESC.filter(x=>!r.has(x.id))};
+const MES={jan:1,fev:2,mar:3,abr:4,mai:5,jun:6,jul:7,ago:8,set:9,out:10,nov:11,dez:12};
+let DIAS=[];
+function chave(d,wrap){const m=String(d).split('/'),mm=MES[(m[1]||'').slice(0,3).toLowerCase()]||0;return(wrap&&mm<=3?mm+12:mm)*100+(+m[0]||0)}
+function montaDias(){
+  const u=[...new Set(DESC.map(x=>x.dia).filter(x=>x&&x!=='-'))];
+  const ms=u.map(d=>chave(d)),wrap=ms.some(k=>k>=1000)&&ms.some(k=>k<400);
+  DIAS=u.sort((a,b)=>chave(a,wrap)-chave(b,wrap));
+  const o=DIAS.map(d=>`<option>${esc(d)}</option>`).join('');
+  $('#dde').innerHTML='<option value="">Início</option>'+o;
+  $('#dat').innerHTML='<option value="">Hoje/fim</option>'+o;
+}
+function descPer(skipC){
+  const a=DIAS.indexOf($('#dde').value),b=DIAS.indexOf($('#dat').value);
+  let L=DESC;
+  if(a>=0||b>=0){
+    const lo=Math.min(a<0?0:a,b<0?DIAS.length-1:b),hi=Math.max(a<0?0:a,b<0?DIAS.length-1:b);
+    const ok=new Set(DIAS.slice(lo,hi+1));L=L.filter(x=>ok.has(x.dia));
+  }
+  if(DPER)L=L.filter(x=>noPeriodo(x.dia,DPER));
+  if(!skipC&&DCIC)L=L.filter(x=>descCiclo(x)===DCIC);
+  return L;
+}
+function visDesc(){
+  const q=$('#qd').value.toLowerCase(),e=$('#sfd').value,m=$('#sfmd').value;
+  const per=new Set(descPer().map(x=>x.id));
+  return descLista().filter(x=>per.has(x.id)&&(!e||x.estado===e)&&(!m||x.motivo===m)&&(x.id+' '+x.solver+' '+x.motivo).toLowerCase().includes(q));
+}
+function descSelUi(){
+  const a=visDesc().slice(0,2000);
+  $('#dselc').textContent=SELD.size+(SELD.size===1?' selecionado':' selecionados');
+  $('#dmvb').disabled=!SELD.size;
+  $('#dmvb').textContent=SELD.size?`Mover ${SELD.size} para Reatribuição →`:'Mover para Reatribuição →';
+  $('#dsela').checked=a.length>0&&a.every(x=>SELD.has(x.id));
+  $('#drselc').textContent=SELDR.size+(SELDR.size===1?' selecionado':' selecionados');
+  $('#drvb').disabled=!SELDR.size;
+  $('#drsela').checked=REATD.length>0&&REATD.every(x=>SELDR.has(x.id));
+}
+function tabelaDesc(){
+  const all=visDesc(),a=all.slice(0,2000);
+  $('#dsn').textContent=all.length+(all.length>a.length?` · mostrando ${a.length}`:'');
+  $('#t10').innerHTML=a.map(x=>`<tr data-id="${x.id}" class="${SELD.has(x.id)?'sel':''}"><td><input type="checkbox" class="ck" ${SELD.has(x.id)?'checked':''} aria-label="Selecionar ${x.id}"></td><td>${x.id}</td><td>${esc(x.estado)}</td><td>${esc(x.solver)}</td><td>${esc(x.data)}</td><td>${esc(x.motivo)}</td></tr>`).join('')||'<tr><td colspan="6">Nenhum registro. Carregue o arquivo CSV.</td></tr>';
+  descSelUi();
+}
+function tabelaReatD(){
+  $('#drn').textContent=REATD.length;
+  $('#t11').innerHTML=REATD.slice().reverse().map(x=>`<tr data-id="${x.id}" class="${SELDR.has(x.id)?'sel':''}"><td><input type="checkbox" class="ck" ${SELDR.has(x.id)?'checked':''} aria-label="Selecionar ${x.id}"></td><td>${x.id}</td><td>${esc(x.estado)}</td><td>${esc(x.solver)}</td><td>${esc(x.motivo)}</td><td>${esc(horaFmt({at:x.at}))}</td></tr>`).join('')||'<tr><td colspan="6">Nenhum ID movido. Selecione IDs na tabela ao lado e clique em Mover.</td></tr>';
+  descSelUi();
+}
+function descRender(){
+  chipsDesc();
+  const B=descPer(),r0=new Set(REATD.map(x=>x.id)),L=B.filter(x=>!r0.has(x.id));
+  $('#tbnd').textContent=DESC.length;const filt=B.length!==DESC.length;
+  $('#dmsg').textContent=DESC.length?`Fonte: ${DESCSRC}. ${DESCDUP?DESCDUP+' linha(s) com ID repetido contada(s) uma vez (mantida a mais recente). ':''}O filtro de ciclo do topo não vale para esta aba; use Período e Ciclo aqui.`:'Nenhum arquivo carregado. Use "Carregar arquivo" (CSV do problem solving) ou Menu > Carregar planilha.';
+  $('#d1').textContent=B.length;$('#d1s').textContent=DESC.length?`${DESCDUP} repetidos ignorados`:'';
+  $('#d2').textContent=L.length;$('#d3').textContent=REATD.length;
+  $('#d4').textContent=B.filter(x=>x.estado==='Pendente').length;
+  const S=cnt(B,'solver'),t=S[0]||['-',0];
+  $('#d5').textContent=t[0];$('#d5s').textContent=B.length?`${t[1]} pacotes (${Math.round(t[1]/B.length*100)}%)`:'';
+  const D=[];B.forEach(x=>{let e=D.find(y=>y[0]===x.dia);if(!e)D.push(e=[x.dia,0]);e[1]++});D.reverse();
+  mk('c21',hbar(cnt(B,'motivo'),PAL[3]));
+  mk('c22',hbar(S.slice(0,12),PAL[0]));
+  const E=cnt(B,'estado');
+  mk('c23',{type:'doughnut',data:{labels:E.map(x=>`${x[0]} (${x[1]})`),datasets:[{data:E.map(x=>x[1]),backgroundColor:PAL}]},options:{plugins:{legend:{position:'right'}}}});
+  mk('c24',{type:'bar',data:{labels:D.map(x=>x[0]),datasets:[{data:D.map(x=>x[1]),backgroundColor:PAL[1],borderRadius:4}]},options:{plugins:{legend:{display:false}},layout:{padding:{top:18}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
+  tabelaDesc();tabelaReatD();
+}
+function dLinha(set,e){
+  const tr=e.target.closest('tr[data-id]');if(!tr)return;
+  const id=tr.dataset.id,on=e.target.matches('input.ck')?e.target.checked:!set.has(id);
+  on?set.add(id):set.delete(id);
+  tr.classList.toggle('sel',on);tr.querySelector('input.ck').checked=on;descSelUi();
+}
+$('#t10').addEventListener('click',e=>dLinha(SELD,e));
+$('#t11').addEventListener('click',e=>dLinha(SELDR,e));
+$('#dsela').onchange=e=>{visDesc().slice(0,2000).forEach(x=>e.target.checked?SELD.add(x.id):SELD.delete(x.id));tabelaDesc()};
+$('#drsela').onchange=e=>{REATD.forEach(x=>e.target.checked?SELDR.add(x.id):SELDR.delete(x.id));tabelaReatD()};
+$('#dmvb').onclick=()=>{
+  const now=new Date().toISOString();let n=0;
+  DESC.filter(x=>SELD.has(x.id)).forEach(x=>{if(!REATD.some(r=>r.id===x.id)){REATD.push({id:x.id,estado:x.estado,solver:x.solver,motivo:x.motivo,data:x.data,dia:x.dia,cic:descCiclo(x),at:now});n++}});
+  SELD.clear();saveReatD();descRender();
+  dmsg(`${n} ID${n===1?'':'s'} movido${n===1?'':'s'} para Reatribuição.`,'ok');
+};
+$('#drvb').onclick=()=>{
+  const n=SELDR.size;REATD=REATD.filter(x=>!SELDR.has(x.id));SELDR.clear();saveReatD();descRender();
+  dmsg(`${n} ID${n===1?'':'s'} devolvido${n===1?'':'s'} para a lista.`,'ok');
+};
+$('#dde').onchange=$('#dat').onchange=descRender;$('#dlimp').onclick=()=>{$('#dde').value='';$('#dat').value='';descRender()};
+chipsDesc();
+$('#qd').oninput=tabelaDesc;$('#sfd').onchange=tabelaDesc;$('#sfmd').onchange=tabelaDesc;
+$('#filed').onchange=e=>{const f=e.target.files[0];if(f)f.arrayBuffer().then(b=>carregarDesc(b,f.name));e.target.value=''};
+
+/* ---------- filtros: ciclo (Sistêmica e Desconteinerizado) e período (Desconteinerizado) ---------- */
+function chip(v,l,n,on){return `<button type="button" class="chip" data-v="${esc(v)}" aria-pressed="${on}">${esc(l)}<small>${n}</small></button>`}
+function cicloTxt(t){const m=String(t||'').match(/_([A-Z]+\d*)\s*(\||$)/i);return m?m[1].toUpperCase():(String(t||'').trim().toUpperCase().match(/^[A-Z]+\d*$/)?String(t).trim().toUpperCase():'')}
+function cicloRota(r){return cicloTxt(r)||'Sem ciclo'}
+function chipsSis(){
+  const c={};CUR.sis.forEach(x=>{const k=cicloRota(x.rota);c[k]=(c[k]||0)+1});
+  const ks=Object.keys(c).sort((a,b)=>c[b]-c[a]||a.localeCompare(b));
+  if(SCIC&&!c[SCIC])SCIC='';
+  $('#chs').innerHTML=chip('','Todos',CUR.sis.length,!SCIC)+ks.map(k=>chip(k,k,c[k],SCIC===k)).join('');
+}
+$('#chs').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;SCIC=b.dataset.v;SELS.clear();chipsSis();tabelaSist()});
+function hojeD(){const d=new Date();d.setHours(0,0,0,0);return d}
+function diaDate(dia){
+  const m=String(dia).split('/'),mm=MES[(m[1]||'').slice(0,3).toLowerCase()],dd=+m[0];
+  if(!mm||!dd)return null;
+  const h=hojeD();let d=new Date(h.getFullYear(),mm-1,dd);
+  if(d-h>864e5)d=new Date(h.getFullYear()-1,mm-1,dd);
+  return d;
+}
+function noPeriodo(dia,n){const d=diaDate(dia);if(!d)return false;const k=Math.round((hojeD()-d)/864e5);return k>=0&&k<n}
+function descCicloMap(){
+  const m=new Map();
+  [...DATA.ret,...DATA.mais].forEach(x=>{if(x.ciclo&&x.ciclo!=='Sem ciclo')m.set(x.id,x.ciclo)});
+  BIP.forEach(x=>{if(x.ciclo&&x.ciclo!=='Sem ciclo')m.set(x.id,x.ciclo)});
+  (DATA.aud||[]).forEach(x=>{const c=cicloTxt(x.rota);if(c)m.set(x.id,c)});
+  return m;
+}
+function descCiclo(x){return x.cic||CMAP.get(x.id)||'Sem ciclo'}
+function chipsDesc(){
+  CMAP=descCicloMap();
+  const P=[[0,'Todos'],[7,'Últimos 7 dias'],[15,'Últimos 15 dias'],[30,'Últimos 30 dias']];
+  const base=DESC.filter(x=>!DPER||noPeriodo(x.dia,DPER));
+  $('#chp').innerHTML=P.map(([n,l])=>chip(n,l,n?DESC.filter(x=>noPeriodo(x.dia,n)).length:DESC.length,DPER===n)).join('');
+  const c={};descPer(true).forEach(x=>{const k=descCiclo(x);c[k]=(c[k]||0)+1});
+  const ks=Object.keys(c).sort((a,b)=>c[b]-c[a]||a.localeCompare(b));
+  if(DCIC&&!c[DCIC])DCIC='';
+  $('#chd').innerHTML=chip('','Todos',descPer(true).length,!DCIC)+ks.map(k=>chip(k,k,c[k],DCIC===k)).join('');
+}
+$('#chp').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;DPER=+b.dataset.v;SELD.clear();descRender()});
+$('#chd').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;DCIC=b.dataset.v;SELD.clear();descRender()});
+
+
+function descDados(){
+  const B=descPer(),Q=visDesc(),RD=reatdFiltrado(),S=cnt(B,'solver'),Mo=cnt(B,'motivo'),E=cnt(B,'estado');
+  const C={};B.forEach(x=>{const k=descCiclo(x);C[k]=(C[k]||0)+1});
+  const Cl=Object.entries(C).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));
+  return{B,Q,RD,S,Mo,E,Cl,pend:B.filter(x=>x.estado==='Pendente').length,
+    fa:(filtrosAtivos().find(z=>z[0]==='Desconteinerizado')||['',''])[1]};
+}
+function gerarPDFDesc(){
+  const {jsPDF}=window.jspdf,d=new jsPDF({unit:'mm',format:'a4'}),W=210,M=14,D=descDados();
+  const cut=(t,n)=>{t=String(t==null?'':t);return t.length>n?t.slice(0,n-1)+'.':t},LIM=1000;
+  d.setFillColor(45,50,119);d.rect(0,0,W,30,'F');d.setFillColor(255,230,0);d.rect(0,30,W,1.6,'F');
+  d.setTextColor(255);d.setFont('helvetica','bold');d.setFontSize(18);d.text('Relatório de Desconteinerizado',M,14);
+  d.setFont('helvetica','normal');d.setFontSize(10);
+  d.text('Gerado em '+new Date().toLocaleString('pt-BR'),M,21);
+  d.text('Filtros: '+cut(D.fa||'nenhum (todos os IDs)',95),M,26.5);
+  const T=D.S[0]||['-',0],k=[['Desconteinerizado',D.B.length],['Na lista',D.B.filter(x=>!REATD.some(r=>r.id===x.id)).length],['Reatribuição',D.RD.length],['Pendentes',D.pend],['Maior solver',cut(T[0],14)]];
+  const kw=(W-2*M-12)/5;
+  k.forEach((x,i)=>{const X=M+i*(kw+3);d.setFillColor(244,245,250);d.roundedRect(X,38,kw,20,2,2,'F');
+    d.setTextColor(107,112,144);d.setFontSize(7.5);d.text(x[0].toUpperCase(),X+3,44);
+    d.setTextColor(45,50,119);d.setFont('helvetica','bold');d.setFontSize(i==4?10:18);d.text(String(x[1]),X+3,53);d.setFont('helvetica','normal')});
+  let y=66;const cw=(W-2*M-6)/2,G=[['c21','Por motivo da exclusão'],['c22','Por problem solver (top 12)'],['c23','Por estado'],['c24','Por dia de criação']];
+  G.forEach((g,i)=>{
+    const cv=$('#'+g[0]),h=cw*cv.height/cv.width,X=M+(i%2)*(cw+6);
+    d.setTextColor(30);d.setFont('helvetica','bold');d.setFontSize(10);d.text(g[1],X,y);
+    d.setDrawColor(228,230,240);d.roundedRect(X,y+2,cw,h+2,2,2,'S');
+    d.addImage(cv.toDataURL('image/png',1),'PNG',X+1,y+3,cw-2,h);
+    if(i%2){const p=$('#'+G[i-1][0]);y+=Math.max(h,cw*p.height/p.width)+12}});
+  const p=(a,t)=>t?Math.round(a/t*100):0,Mt=D.Mo[0]||['-',0],n=D.B.length;
+  d.setFont('helvetica','bold');d.setFontSize(12);d.setTextColor(45,50,119);d.text('Destaques',M,y);y+=6;
+  d.setFont('helvetica','normal');d.setFontSize(10);d.setTextColor(30);
+  [`- ${n} pacotes desconteinerizados; ${D.pend} pendentes (${p(D.pend,n)}%).`,
+   `- Maior problem solver: ${T[0]} com ${T[1]} pacotes (${p(T[1],n)}%).`,
+   `- Principal motivo: ${Mt[0]} (${Mt[1]} ocorrências, ${p(Mt[1],n)}%).`,
+   `- Por ciclo: ${D.Cl.map(c=>c[0]+' '+c[1]).join(' | ')||'-'}.`,
+   `- ${D.RD.length} IDs movidos para Reatribuição.`].forEach(s=>{d.text(cut(s,105),M,y);y+=6});
+  d.addPage();y=18;
+  y=tbl(d,y,'Desconteinerizado - '+D.Q.length+' ID'+(D.Q.length===1?'':'s'),['ID do pacote','Estado','Problem solver','Ciclo','Dia','Motivo'],D.Q.slice(0,LIM).map(x=>[x.id,x.estado,cut(x.solver,22),cut(descCiclo(x),9),x.dia,cut(x.motivo,22)]),[32,22,46,18,16,48]);
+  if(D.Q.length>LIM){d.setFontSize(9);d.setTextColor(90);d.text('Mostrando '+LIM+' de '+D.Q.length+'. A lista completa está no Excel.',M,y-6)}
+  if(D.RD.length)y=tbl(d,y,'Reatribuição - '+D.RD.length+' ID'+(D.RD.length===1?'':'s'),['ID do pacote','Estado','Problem solver','Dia','Motivo'],D.RD.slice(0,LIM).map(x=>[x.id,x.estado,cut(x.solver,26),x.dia,cut(x.motivo,26)]),[34,24,56,18,50]);
+  const np=d.getNumberOfPages();
+  for(let i=1;i<=np;i++){d.setPage(i);d.setFontSize(8);d.setTextColor(140);d.text(`Página ${i} de ${np}  |  Fonte: ${DESCSRC||'-'}`,M,291)}
+  d.save('relatorio-desconteinerizado-'+new Date().toISOString().slice(0,10)+'.pdf');
+}
+function exportarExcelDesc(){
+  const D=descDados(),folha=(h,rows,w)=>{const s=XLSX.utils.aoa_to_sheet([h,...rows]);s['!cols']=w.map(wch=>({wch}));return s};
+  const wb=XLSX.utils.book_new(),n=D.B.length,pc=(a)=>n?Math.round(a/n*100)+'%':'0%';
+  XLSX.utils.book_append_sheet(wb,folha(['Onde','Filtro aplicado'],[['Desconteinerizado',D.fa||'nenhum (todos os IDs)']],[24,80]),'Filtros aplicados');
+  const R=[['Resumo do Desconteinerizado'],[],['Fonte',DESCSRC||'-'],['Total (filtros de período e ciclo)',n],['Pendentes',D.pend],['IDs em Reatribuição',D.RD.length],[],['Por ciclo','Pacotes','%'],...D.Cl.map(c=>[c[0],c[1],pc(c[1])]),[],['Por estado','Pacotes','%'],...D.E.map(c=>[c[0],c[1],pc(c[1])]),[],['Por motivo','Pacotes','%'],...D.Mo.map(c=>[c[0],c[1],pc(c[1])]),[],['Por problem solver','Pacotes','%'],...D.S.map(c=>[c[0],c[1],pc(c[1])])];
+  const sr=XLSX.utils.aoa_to_sheet(R);sr['!cols']=[{wch:44},{wch:12},{wch:8}];XLSX.utils.book_append_sheet(wb,sr,'Resumo');
+  XLSX.utils.book_append_sheet(wb,folha(['ID do pacote','Estado','Problem solver','Ciclo','Criação','Motivo da exclusão'],D.Q.map(x=>[x.id,x.estado,x.solver,descCiclo(x),x.data,x.motivo]),[16,12,34,10,20,26]),'Desconteinerizado');
+  if(D.RD.length)XLSX.utils.book_append_sheet(wb,folha(['ID do pacote','Estado','Problem solver','Ciclo','Motivo da exclusão','Criação','Movido em'],D.RD.map(x=>[x.id,x.estado,x.solver,x.cic||'',x.motivo,x.data,horaFmt({at:x.at})]),[16,12,34,10,26,20,20]),'Reatribuição');
+  XLSX.writeFile(wb,'relatorio-desconteinerizado-'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
+$('#dpdf').onclick=()=>{if(!DESC.length)return alert('Carregue o arquivo do Desconteinerizado primeiro.');gerarPDFDesc()};
+$('#dxls').onclick=()=>{if(!DESC.length)return alert('Carregue o arquivo do Desconteinerizado primeiro.');exportarExcelDesc()};
+
+function limparTudo(){
+  if(!confirm('Limpar TODOS os dados de TODAS as abas?\n\nIsso apaga: planilha carregada, IDs bipados, Sistêmica, Físico, Desconteinerizado e as listas de Reatribuição.\nBaixe os relatórios antes. Não dá para desfazer.'))return;
+  DATA={ret:[],mais:[],mov:[],aud:[],audDup:0};SRC='nenhuma planilha carregada';AUDSRC='';
+  BIP=[];saveBip();REAT=[];saveReat();REATD=[];saveReatD();
+  DESC=[];DESCDUP=0;DESCSRC='';DIAS=[];
+  [SELS,SELR,SELD,SELDR].forEach(s=>s.clear());
+  SCIC='';DPER=0;DCIC='';CMAP=new Map();
+  ['#q','#qf','#qa','#qp','#qy','#qd'].forEach(i=>{const e=$(i);if(e)e.value=''});
+  ['#sfe','#sfd'].forEach(i=>{const e=$(i);if(e)e.value=''});
+  $('#sfmd').innerHTML='<option value="">Todos os motivos</option>';
+  $('#dde').innerHTML='<option value="">Início</option>';$('#dat').innerHTML='<option value="">Hoje/fim</option>';
+  $('#fc').value='';refreshFc();render();descRender();abaTrocar('geral');
+  $('#mnl').hidden=true;$('#mnb').setAttribute('aria-expanded','false');
+}
+$('#limpa').onclick=limparTudo;
+function reatdFiltrado(){return REATD.filter(x=>(!DPER||!x.dia||noPeriodo(x.dia,DPER))&&(!DCIC||!x.cic||x.cic===DCIC))}
+function reatFiltrado(){return REAT.filter(x=>!SCIC||cicloRota(x.rota)===SCIC)}
+function filtrosAtivos(){
+  const L=[],j=a=>a.filter(Boolean).join(', ');
+  const top=$('#fc').value;
+  if(top)L.push(['Ciclo do topo (Retirados, À mais, Faltantes, Avarias)',top]);
+  const se=$('#sfe').value,sq=$('#qy').value.trim();
+  if(SCIC||se||sq)L.push(['Sistêmica',j([SCIC&&'Ciclo '+SCIC,se&&'Estado '+se,sq&&'Busca "'+sq+'"'])]);
+  const de=$('#dde').value,ate=$('#dat').value,ds=$('#sfd').value,dm=$('#sfmd').value,dq=$('#qd').value.trim();
+  if(DPER||DCIC||de||ate||ds||dm||dq)L.push(['Desconteinerizado',j([DPER&&'Últimos '+DPER+' dias',DCIC&&'Ciclo '+DCIC,de&&'De '+de,ate&&'Até '+ate,ds&&'Estado '+ds,dm&&'Motivo '+dm,dq&&'Busca "'+dq+'"'])]);
+  return L;
+}
+
+function valMap(){const m=new Map();(DATA.aud||[]).forEach(x=>{if(x.valor!=null)m.set(x.id,x.valor)});return m}
+function valSoma(a,m){let t=0,sem=0;a.forEach(x=>{const v=m.get(String(x.id));if(v==null)sem++;else t+=v});return{t:Math.round(t*100)/100,sem}}
+function valorGeral(){
+  const m=valMap(),hv=m.size>0;document.body.classList.toggle('semvalor',!hv);$('#kval').hidden=!hv;
+  if(!hv)return;
+  const v=view(),L=[['vg2',v.ret],['vg3',v.mais],['vg4',v.falt],['vg5',v.avar]],S=L.map(([i,a])=>[i,a,valSoma(a,m)]);
+  const tot=Math.round(S.reduce((t,x)=>t+x[2].t,0)*100)/100,n=S.reduce((t,x)=>t+x[1].length,0),sem=S.reduce((t,x)=>t+x[2].sem,0);
+  $('#vg1').textContent=brl(tot);$('#vg1s').textContent=n?`${n-sem} de ${n} IDs com valor`:'Nenhum ID bipado';
+  S.forEach(([i,a,r])=>{$('#'+i).textContent=brl(r.t);$('#'+i+'s').textContent=a.length?`${a.length-r.sem} de ${a.length} IDs com valor`:'Nenhum ID'});
+}
+/* ---------- abas ---------- */
+function abaTrocar(t){
+  $('#pg').hidden=t!=='geral';$('#pf').hidden=t!=='falt';$('#pa').hidden=t!=='avar';$('#pfi').hidden=t!=='fis';$('#psi').hidden=t!=='sist';$('#pd').hidden=t!=='desc';
+  document.querySelectorAll('.tb').forEach(b=>{const on=b.dataset.tab===t;b.classList.toggle('on',on);b.setAttribute('aria-selected',on)});
+  const an=$('#abanome');if(an)an.textContent=NOMEABA[t]||'';
+  Object.values(charts).forEach(c=>{try{c.resize()}catch(e){}});
+}
+document.querySelectorAll('.tb').forEach(b=>b.onclick=()=>abaTrocar(b.dataset.tab));
+const NOMEABA={geral:'Visão geral',falt:'Faltantes',avar:'Avarias',fis:'Físico',sist:'Sistêmica',desc:'Desconteinerizado'};
+function gaveta(a){
+  $('#tabsnav').classList.toggle('open',a);$('#ov').hidden=!a;$('#hb').setAttribute('aria-expanded',a?'true':'false');
+  if(a){const on=$('#tabsnav .tb.on');if(on)on.focus()}else $('#hb').focus();
+}
+$('#hb').onclick=()=>gaveta(!$('#tabsnav').classList.contains('open'));
+$('#hbx').onclick=()=>gaveta(false);$('#ov').onclick=()=>gaveta(false);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#tabsnav').classList.contains('open'))gaveta(false)});
+document.querySelectorAll('#tabsnav .tb').forEach(b=>b.addEventListener('click',()=>{$('#tabsnav').classList.remove('open');$('#ov').hidden=true;$('#hb').setAttribute('aria-expanded','false')}));
+
+
+/* ---------- menu ---------- */
+const abreMenu=a=>{$('#mnl').hidden=!a;$('#mnb').setAttribute('aria-expanded',a?'true':'false')};
+$('#mnb').onclick=e=>{e.stopPropagation();abreMenu($('#mnl').hidden)};
+$('#mnl').addEventListener('click',e=>{e.stopPropagation();if(e.target.closest('button.mi'))abreMenu(false)});
+$('#file').addEventListener('change',()=>abreMenu(false));
+document.addEventListener('click',()=>abreMenu(false));
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#mnl').hidden){abreMenu(false);$('#mnb').focus()}});
+
+/* ---------- eventos e início ---------- */
+$('#fc').onchange=render;$('#q').oninput=tabelas;$('#qf').oninput=tabelaFalt;$('#qa').oninput=tabelaAvar;$('#qy').oninput=tabelaSist;$('#sfe').onchange=tabelaSist;$('#qp').oninput=tabelaFis;$('#sfp').onchange=tabelaFis;$('#pdf').onclick=()=>{gerarPDF();if(BIP.length)exportarExcel()};
+$('#file').onchange=e=>{const f=e.target.files[0];if(f)f.arrayBuffer().then(b=>load(b,f.name))};
+(async()=>{
+  setData(DATA,SRC); // começa zerado até haver planilha
+  descRender();
+  try{const r=await fetch('dados.xlsx',{cache:'no-store'});if(r.ok)load(await r.arrayBuffer(),'dados.xlsx')}catch(e){}
+})();
+
+/* ---------- janela de escolha de abas ---------- */
+const ABAS=[['geral','Visão geral','Retirados e À mais'],['falt','Faltantes','Bipados como faltante'],['avar','Avarias','Bipados como avaria'],['fis','Físico','Bipados × planilha Sistêmica'],['sist','Sistêmica','Planilha de auditoria e movimentados'],['desc','Desconteinerizado','Problem solving e Reatribuição']];
+const CARGAS=[['auto','Detectar automaticamente','Recomendado: o Dashboard identifica o tipo pelo cabeçalho'],['main','Visão geral','Planilha de Retirados / À mais'],['sis','Sistêmica e Físico','Planilha de auditoria (SHIPMENT) ou de valor declarado (ID do envio)'],['desc','Desconteinerizado','Arquivo de problem solving (coluna ID do pacote)']];
+function contaAba(k){const v=view();return{geral:v.ret.length+v.mais.length,falt:v.falt.length,avar:v.avar.length,fis:CUR.fis.length,sist:CUR.sis.length,desc:DESC.length}[k]}
+let SMT='';
+function smAbrir(tipo){
+  SMT=tipo;const o=$('#smo');
+  if(tipo==='load'){
+    $('#smt').textContent='Carregar arquivo';$('#smd').textContent='Escolha para qual aba é o arquivo:';
+    o.innerHTML=CARGAS.map((c,i)=>`<label class="orow${i?'':' on'}"><input type="radio" name="sk" value="${c[0]}"${i?'':' checked'}><span><b>${c[1]}</b><small>${c[2]}</small></span><em></em></label>`).join('');
+    $('#smn').textContent='Faltantes e Avarias são preenchidos pelo botão Bipar IDs, não por arquivo.';$('#smok').textContent='Escolher arquivo…';
+  }else{
+    const x=tipo==='xls';
+    $('#smt').textContent=x?'Exportar relatório em Excel':'Baixar relatório PDF';$('#smd').textContent='Escolha as abas que entram no relatório (os filtros ativos continuam valendo):';
+    o.innerHTML=`<label class="orow all on"><input type="checkbox" id="small" checked><span><b>Todas as abas</b></span><em></em></label>`+ABAS.map(a=>`<label class="orow on"><input type="checkbox" name="sa" value="${a[0]}" checked><span><b>${a[1]}</b><small>${a[2]}</small></span><em>${contaAba(a[0])}</em></label>`).join('')+(x?'':`<label class="orow${BIP.length?' on':''}"><input type="checkbox" id="smxl"${BIP.length?' checked':''}><span><b>Gerar também o Excel</b><small>Baixa junto o Excel com as mesmas abas</small></span><em></em></label>`);
+    $('#smn').textContent='';$('#smok').textContent=x?'Exportar Excel':'Gerar PDF';
+  }
+  $('#sm').hidden=false;
+}
+const smFechar=()=>{$('#sm').hidden=true};
+$('#smo').addEventListener('change',e=>{
+  const t=e.target;
+  if(t.id==='small')document.querySelectorAll('#smo input[name=sa]').forEach(c=>c.checked=t.checked);
+  else if(t.name==='sa'){const cs=[...document.querySelectorAll('#smo input[name=sa]')];$('#small').checked=cs.every(c=>c.checked)}
+  document.querySelectorAll('#smo .orow').forEach(r=>r.classList.toggle('on',r.querySelector('input').checked));
+});
+function exportaSel(tipo,sel){
+  const so=sel.size===1&&sel.has('desc');
+  if(tipo==='xls')so?exportarExcelDesc():exportarExcel(sel);else so?gerarPDFDesc():gerarPDF(sel);
+}
+$('#smok').onclick=()=>{
+  if(SMT==='load'){const k=(document.querySelector('#smo input[name=sk]:checked')||{}).value||'auto';$('#fsel').dataset.k=k;smFechar();$('#fsel').click();return}
+  const sel=new Set([...document.querySelectorAll('#smo input[name=sa]:checked')].map(c=>c.value));
+  if(!sel.size){$('#smn').textContent='Marque pelo menos uma aba.';return}
+  const tambem=SMT==='pdf'&&$('#smxl')&&$('#smxl').checked;
+  smFechar();exportaSel(SMT,sel);if(tambem)exportaSel('xls',sel);
+};
+$('#fsel').onchange=e=>{const f=e.target.files[0],k=e.target.dataset.k||'auto';if(f)f.arrayBuffer().then(b=>load(b,f.name,k));e.target.value=''};
+$('#smx').onclick=$('#smc').onclick=smFechar;
+$('#sm').addEventListener('click',e=>{if(e.target===$('#sm'))smFechar()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sm').hidden)smFechar()});
+const acao=f=>()=>{gaveta(false);f()};
+$('#acl').onclick=acao(()=>smAbrir('load'));$('#ace').onclick=acao(()=>smAbrir('xls'));$('#acp').onclick=acao(()=>smAbrir('pdf'));$('#acx').onclick=acao(()=>limparTudo());
+</script>
+</body>
+</html>
