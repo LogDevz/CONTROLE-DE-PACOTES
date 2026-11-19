@@ -387,7 +387,8 @@ body.semvalor .cv{display:none}
     <div class="addn" id="bnr" hidden><input type="text" id="bnn" placeholder="Nome do novo responsável" autocomplete="off" aria-label="Nome do novo responsável"><button class="btn p" id="bns" type="button">Salvar nome</button></div></div>
    <div class="fl"><span class="lb">Ciclo</span><div class="chips" id="bchc"></div>
     <div class="addn" id="bnrc" hidden><input type="text" id="bnc" placeholder="Novo ciclo (ex.: PM2)" autocomplete="off" aria-label="Novo ciclo"><button class="btn p" id="bsc" type="button">Salvar ciclo</button></div></div>
-   <div class="fl"><span class="lb">Transportadora</span><div class="chips" id="bcht"></div></div>
+   <div class="fl"><span class="lb">Transportadora</span><div class="chips" id="bcht"></div>
+    <div class="addn" id="bnrt" hidden><input type="text" id="bnt" placeholder="Nome da nova transportadora" autocomplete="off" aria-label="Nome da nova transportadora"><button class="btn p" id="bst" type="button">Salvar transportadora</button></div></div>
   </div>
   <datalist id="brl"></datalist><datalist id="bcl"></datalist><datalist id="btl"></datalist>
   <div class="sc"><input type="text" id="bid" placeholder="Bipe ou cole o ID e aperte Enter" inputmode="numeric" autocomplete="off"><button class="btn p" id="ba">Adicionar</button></div>
@@ -740,7 +741,7 @@ function bipLabels(){
   const all=[...baseAll(),...BIP];
   const cic=[...new Set([...cicTodos(),...all.map(x=>x.ciclo).filter(c=>c&&c!=='Sem ciclo')])];
   $('#bcl').innerHTML=cic.map(c=>`<option value="${esc(c)}">`).join('');
-  const tr=[...new Set([...TRANSP_PRE,...all.map(x=>x.transp).filter(t=>t&&t!==NI)])];
+  const tr=[...new Set([...trTodos(),...all.map(x=>x.transp).filter(t=>t&&t!==NI)])];
   $('#btl').innerHTML=tr.map(t=>`<option value="${esc(t)}">`).join('');
   bipChips();
 }
@@ -750,6 +751,10 @@ let MELI_EXTRA=[];
 try{const a=JSON.parse(localStorage.getItem('cp_meli_nomes')||'[]');if(Array.isArray(a))MELI_EXTRA=a.filter(x=>typeof x==='string'&&x.trim())}catch(e){MELI_EXTRA=[]}
 const saveMeli=()=>{try{localStorage.setItem('cp_meli_nomes',JSON.stringify(MELI_EXTRA))}catch(e){}};
 const meliTodos=()=>[...MELI_PRE,...MELI_EXTRA];
+let TR_EXTRA=[];
+try{const a=JSON.parse(localStorage.getItem('cp_transportadoras')||'[]');if(Array.isArray(a))TR_EXTRA=a.filter(x=>typeof x==='string'&&x.trim())}catch(e){TR_EXTRA=[]}
+const saveTr=()=>{try{localStorage.setItem('cp_transportadoras',JSON.stringify(TR_EXTRA))}catch(e){}};
+const trTodos=()=>[...new Set([...TRANSP_PRE,...TR_EXTRA])];
 const CIC_PRE=['AM','PM','SD'];
 let CIC_EXTRA=[];
 try{const a=JSON.parse(localStorage.getItem('cp_ciclos')||'[]');if(Array.isArray(a))CIC_EXTRA=a.filter(x=>typeof x==='string'&&x.trim())}catch(e){CIC_EXTRA=[]}
@@ -762,14 +767,21 @@ function bipChips(){
   $('#bchm').innerHTML=meliTodos().map(n=>{const ex=MELI_EXTRA.some(x=>igual(x,n));return `<button type="button" class="chip" data-m="${esc(n)}" aria-pressed="${igual(n,vr)}">${esc(n)}${ex?`<span class="cx" data-rm="${esc(n)}" title="Remover da lista" aria-label="Remover ${esc(n)} da lista">×</span>`:''}</button>`}).join('')+'<button type="button" class="chip add" id="bnew">＋ Novo</button>';
   const vc=$('#bc').value;
   $('#bchc').innerHTML=cicTodos().map(n=>{const ex=CIC_EXTRA.some(x=>igual(x,n));return `<button type="button" class="chip" data-c="${esc(n)}" aria-pressed="${igual(n,vc)}">${esc(n)}${ex?`<span class="cx" data-rc="${esc(n)}" title="Remover da lista" aria-label="Remover ${esc(n)} da lista">×</span>`:''}</button>`}).join('')+'<button type="button" class="chip add" id="bnewc">＋ Novo</button>';
-  const tr=[...new Set([...TRANSP_PRE,...[...baseAll(),...BIP].map(x=>x.transp).filter(x=>x&&x!==NI)])];
-  $('#bcht').innerHTML=tr.map(n=>`<button type="button" class="chip" data-t="${esc(n)}" aria-pressed="${igual(n,vt)}">${esc(n)}</button>`).join('');
+  const tr=[...new Set([...trTodos(),...[...baseAll(),...BIP].map(x=>x.transp).filter(x=>x&&x!==NI)])];
+  $('#bcht').innerHTML=tr.map(n=>{const ex=TR_EXTRA.some(x=>igual(x,n));return `<button type="button" class="chip" data-t="${esc(n)}" aria-pressed="${igual(n,vt)}">${esc(n)}${ex?`<span class="cx" data-rt="${esc(n)}" title="Remover da lista" aria-label="Remover ${esc(n)} da lista">×</span>`:''}</button>`}).join('')+'<button type="button" class="chip add" id="bnewt">＋ Novo</button>';
 }
 function meliSalvar(){
   const n=nome($('#bnn').value);
   if(n==='Não informado'){$('#bnn').focus();return}
   if(!meliTodos().some(x=>igual(x,n))){MELI_EXTRA.push(n);saveMeli()}
   $('#br').value=meliTodos().find(x=>igual(x,n));$('#bnn').value='';$('#bnr').hidden=true;
+  bipChips();bipMsg('');
+}
+function trSalvar(){
+  const n=canonTr($('#bnt').value);
+  if(n===NI){$('#bnt').focus();return}
+  if(!trTodos().some(x=>igual(x,n))){TR_EXTRA.push(n);saveTr()}
+  $('#bt').value=n;$('#bnt').value='';$('#bnrt').hidden=true;
   bipChips();bipMsg('');
 }
 function cicSalvar(){
@@ -780,6 +792,10 @@ function cicSalvar(){
   bipChips();bipMsg('');
 }
 $('#bpre').addEventListener('click',e=>{
+  const rt=e.target.closest('[data-rt]');
+  if(rt){e.stopPropagation();const n=rt.dataset.rt;TR_EXTRA=TR_EXTRA.filter(x=>!igual(x,n));saveTr();if(igual($('#bt').value,n))$('#bt').value='';bipChips();return}
+  if(e.target.closest('#bnewt')){const r=$('#bnrt');r.hidden=!r.hidden;if(!r.hidden)$('#bnt').focus();return}
+  if(e.target.closest('#bst')){trSalvar();return}
   const rc=e.target.closest('[data-rc]');
   if(rc){e.stopPropagation();const n=rc.dataset.rc;CIC_EXTRA=CIC_EXTRA.filter(x=>!igual(x,n));saveCic();if(igual($('#bc').value,n))$('#bc').value='';bipChips();return}
   const ci=e.target.closest('[data-c]');
@@ -795,6 +811,7 @@ $('#bpre').addEventListener('click',e=>{
   if(e.target.closest('#bnew')){const r=$('#bnr');r.hidden=!r.hidden;if(!r.hidden)$('#bnn').focus();return}
   if(e.target.closest('#bns'))meliSalvar();
 });
+$('#bnt').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();trSalvar()}});
 $('#bnc').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();cicSalvar()}});
 $('#bnn').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();meliSalvar()}});
 $('#br').addEventListener('input',bipChips);$('#bc').addEventListener('input',bipChips);$('#bt').addEventListener('input',bipChips);
