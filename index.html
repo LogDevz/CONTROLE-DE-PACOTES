@@ -751,7 +751,7 @@ const canonMot=s=>{const k=semAc(s);return k==='nao cabe no veiculo'?'Não cabe 
 const baseAll=()=>[...DATA.ret,...DATA.mais,...(DATA.mov||[])];
 function refreshFc(){
   const cur=$('#fc').value;
-  const cs=[...new Set([...cicTodos(),...baseAll(),...BIP].map(x=>x.ciclo))].sort();
+  const cs=[...new Set([...cicTodos(),...[...baseAll(),...BIP].map(x=>x.ciclo)].filter(Boolean))].sort();
   $('#fc').innerHTML='<option value="">Todos os ciclos</option>'+cs.map(c=>`<option>${esc(c)}</option>`).join('');
   if(cs.includes(cur))$('#fc').value=cur;
 }
@@ -1335,7 +1335,7 @@ function textoRelatorio(ciclo){
     const ln=[];
     ln.push(`*RELATÓRIO OPERACIONAL — ${ciclo?'CICLO '+ciclo:'TODOS OS CICLOS'} (${new Date().toLocaleDateString('pt-BR')})*`,'');
     ln.push('*1. RESUMO GERAL*');
-    ln.push(`- Total de pacotes bipados: ${todos.length} IDs`+(hv?` (${brl(vt(todos).t)} — ${todos.length-vt(todos).sem} com valor declarado)`:''));
+    ln.push(`- Total de pacotes bipados: ${todos.length} ID${todos.length===1?'':'s'}`+(hv?` (${brl(vt(todos).t)} — ${todos.length-vt(todos).sem} com valor declarado)`:''));
     ln.push(`- Pacotes retirados: ${v.ret.length}`+(hv?brt(v.ret):''));
     ln.push(`- Pacotes à mais: ${v.mais.length}`+(hv?brt(v.mais):''));
     ln.push(`- Diferença líquida (retirados − à mais): ${v.ret.length-v.mais.length}`);
