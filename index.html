@@ -149,7 +149,7 @@ body.semrota .tw table:has(#t7) :is(th,td):nth-child(n+5):nth-child(-n+8),body.s
 body.semvalor .cv{display:none}
 .pre{display:grid;gap:10px;margin:0 0 12px;padding:12px;border:1px solid var(--line);border-radius:10px;background:#f5f9ff}
 .pre .fl{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
-.pre .fl[hidden],.pre .addn[hidden]{display:none}
+.pre .fl[hidden],.pre .addn[hidden],.fg label[hidden]{display:none}
 .pre .lb{font-size:.72rem;min-width:110px}
 .pre .chip{font-size:.82rem;padding:6px 12px}
 .pre .chip .cx{margin-left:7px;opacity:.6;font-weight:700}
@@ -158,9 +158,42 @@ body.semvalor .cv{display:none}
 .pre .chip.add:hover{background:#e8f0fb}
 .pre .addn{display:flex;gap:6px;flex-basis:100%;margin-left:0}
 .pre .addn input{flex:1;min-width:0;font:inherit;font-size:.9rem;border-radius:8px;border:1px solid var(--line);padding:7px 11px}
+:root{--lh:0px}
+body.tem-lemb{--lh:46px;padding-top:var(--lh)}
+.ov{padding-top:calc(24px + var(--lh))}
+.tabs{top:var(--lh)}
+#lbar{position:fixed;top:0;left:0;right:0;height:46px;z-index:90;display:flex;align-items:center;gap:10px;padding:0 12px;background:#eaf2fe;border-bottom:1px solid #c8d9f2;overflow-x:auto;white-space:nowrap}
+#lbar[hidden]{display:none}
+#lbar .lbtn{flex:none;font:inherit;font-size:.8rem;font-weight:700;color:var(--pri);background:#fff;border:1px solid #c8d9f2;border-radius:8px;padding:6px 10px;cursor:pointer}
+#lbar .lbtn:hover{background:#e8f0fb}
+.pit{flex:none;display:flex;align-items:center;gap:8px;height:32px;padding:0 6px 0 10px;border-radius:3px 3px 3px 14px;border-left:5px solid;color:var(--ink);font-size:.85rem;box-shadow:0 2px 5px rgba(8,24,52,.22)}
+.pit.alta{background:#ffd9d6;border-color:#e53935}.pit.media{background:#fff3b8;border-color:#f5b800}.pit.baixa{background:#d9e9ff;border-color:#1f6feb}
+.pit .lu{font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;opacity:.75}
+.pit .ln{max-width:240px;overflow:hidden;text-overflow:ellipsis;font-weight:700}
+.pit .lok{font:inherit;font-size:.75rem;font-weight:700;border:1px solid rgba(8,24,52,.25);background:rgba(255,255,255,.7);border-radius:6px;padding:3px 8px;cursor:pointer}
+.pit .lok:hover,.pit .lok:focus-visible{background:#fff;outline:2px solid var(--pri)}
+#lbar .lun{flex:none;font-size:.8rem;color:var(--mut)}
+#lbar .lun button{font:inherit;font-size:.8rem;font-weight:700;color:var(--acc);background:none;border:0;cursor:pointer;text-decoration:underline}
+.lrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.lrow .ln{flex:1;min-width:0;overflow-wrap:anywhere;font-weight:600}
+.lrow .lu{flex:none;font-size:.7rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:999px}
+.lrow .lu.alta{background:#ffd9d6;color:#a3201b}.lrow .lu.media{background:#fff3b8;color:#7a5a00}.lrow .lu.baixa{background:#d9e9ff;color:#0b3d91}
 </style>
 </head>
 <body>
+<div id="lbar" hidden role="region" aria-label="Lembretes ativos"></div>
+<div class="ov" id="lm" hidden role="dialog" aria-modal="true" aria-labelledby="lmt" style="z-index:85">
+ <div class="md" style="max-width:560px">
+  <div class="mh"><h2 id="lmt">Lembretes</h2><button class="btn" id="lmx" type="button">Fechar</button></div>
+  <label class="smf">Nome do lembrete<input type="text" id="lmn" maxlength="80" placeholder="Ex.: Conferir a carga do PM" autocomplete="off"></label>
+  <div class="smf"><span>Urgência</span><div class="chips" id="lmu"></div></div>
+  <div class="mf" style="justify-content:flex-start;margin-bottom:14px"><button class="btn p" id="lma" type="button">Adicionar lembrete</button></div>
+  <p id="lmm" role="status" style="font-size:.85rem;min-height:1.1em;margin:0 0 8px;color:#e53935"></p>
+  <h3 style="margin:6px 0 6px;font-size:.95rem;color:var(--pri)">Lembretes ativos (<span id="lmc">0</span>)</h3>
+  <div id="lml"></div>
+  <p class="smd" style="margin-top:12px">Ficam salvos neste navegador e aparecem no topo da tela, inclusive com o Bipar IDs aberto. Ao concluir, o lembrete é removido.</p>
+ </div>
+</div>
 <header>
   <div class="hbw">
     <button class="hb" id="hb" type="button" aria-label="Abrir menu lateral" title="Abrir menu lateral" aria-expanded="false" aria-controls="tabsnav"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg></button>
@@ -207,6 +240,7 @@ body.semvalor .cv{display:none}
   <details class="gv" open><summary class="tl">Conferência</summary><div class="gi">
   <button class="tb" id="tbf" role="tab" aria-selected="false" data-tab="falt">Faltantes (<span id="tbn">0</span>)</button>
   <button class="tb" id="tba" role="tab" aria-selected="false" data-tab="avar">Avarias (<span id="tbna">0</span>)</button>
+  <button class="tb" id="tbi" role="tab" aria-selected="false" data-tab="inc">Inclusão manual (<span id="tbni">0</span>)</button>
   <button class="tb" id="tbp" role="tab" aria-selected="false" data-tab="fis">Físico (<span id="tbnp">0</span>)</button>
   <button class="tb" id="tbs" role="tab" aria-selected="false" data-tab="sist">Sistêmica (<span id="tbns">0</span>)</button>
   <button class="tb" id="tbd" role="tab" aria-selected="false" data-tab="desc">Desconteinerizado (<span id="tbnd">0</span>)</button>
@@ -214,6 +248,8 @@ body.semvalor .cv{display:none}
   <details class="gv"><summary class="tl">Ações</summary><div class="gi">
   <button class="ta" id="acl" type="button">Carregar arquivo <i>›</i></button>
   <button class="ta" id="acp" type="button">Gerar Relatório <i>›</i></button>
+  <button class="ta" id="acr" type="button">Lembretes <i id="alc">›</i></button>
+  <button class="ta" id="acm" type="button">Mesclar Planilhas <i>↗</i></button>
   </div></details>
 </nav>
 <main>
@@ -290,7 +326,24 @@ body.semvalor .cv{display:none}
   </div>
   <div class="card"><h2>Detalhe - Avarias</h2><div class="tw"><table><thead><tr><th>ID</th><th>Responsável LOG</th><th>Transportadora</th><th>Ciclo</th><th>Bipado em</th><th class="cv">Valor declarado</th><th></th></tr></thead><tbody id="t6"></tbody></table></div></div>
  </div>
-<div class="pane" id="pfi" hidden>
+<div class="pane" id="pi" hidden>
+  <section class="kpis">
+    <div class="card kpi"><span>Pacotes por inclusão manual</span><b id="i1">0</b><i>Retirados com este motivo</i></div>
+    <div class="card kpi"><span>Ciclo alvo principal</span><b id="i2" style="font-size:1.4rem;margin-top:10px">-</b><i id="i2s"></i></div>
+    <div class="card kpi"><span>Transportadora alvo principal</span><b id="i3" style="font-size:1.4rem;margin-top:10px">-</b><i id="i3s"></i></div>
+  </section>
+  <section class="grid">
+    <div class="card"><h2>Inclusões por ciclo alvo</h2><div class="ch"><canvas id="c41"></canvas></div></div>
+    <div class="card"><h2>Inclusões por transportadora alvo</h2><div class="ch"><canvas id="c42"></canvas></div></div>
+    <div class="card"><h2>Fluxo entre ciclos</h2><div class="tw"><table><thead><tr><th>Ciclo de retirada</th><th>Ciclo alvo</th><th>Pacotes</th></tr></thead><tbody id="ti1"></tbody></table></div></div>
+  </section>
+  <div class="card" style="margin-bottom:14px;display:flex;flex-wrap:wrap;gap:8px">
+    <input type="search" id="qi" placeholder="Buscar por ID, responsável ou transportadora alvo..." style="flex:1;min-width:200px">
+    <button class="btn p" id="bia2">+ Bipar inclusão manual</button>
+  </div>
+  <div class="card"><h2>Detalhe - Inclusão manual</h2><div class="tw"><table><thead><tr><th>ID</th><th>MELI responsável</th><th>Ciclo de retirada</th><th>Ciclo alvo</th><th>Transportadora alvo</th><th class="cv">Valor declarado</th></tr></thead><tbody id="ti2"></tbody></table></div></div>
+ </div>
+ <div class="pane" id="pfi" hidden>
   <p id="fmsg" style="font-size:.8rem;color:var(--mut);margin:0 0 12px"></p>
   <section class="kpis">
     <div class="card kpi"><span>IDs repetidos</span><b id="p1">0</b><i>Na planilha e nas abas</i></div>
@@ -402,16 +455,19 @@ body.semvalor .cv{display:none}
   <div class="fg">
    <label>Status<select id="bs"><option>Retirado</option><option>À mais</option><option>Faltante</option><option>Avaria</option></select></label>
    <label><span id="bl">MELI responsável</span><input type="text" id="br" list="brl" placeholder="Digite o nome" autocomplete="off"></label>
-   <label>Ciclo<input type="text" id="bc" list="bcl" placeholder="PM, AM, SD" autocomplete="off"></label>
-   <label>Transportadora<input type="text" id="bt" list="btl" placeholder="Nome da transportadora" autocomplete="off"></label>
-   <label id="bmw">Motivo<select id="bmot"><option>Não cabe no veículo</option><option>Área bloqueada</option><option>Fora de área</option><option>Autorizado a retirada</option><option>Inclusão manual</option><option>PCTs sem atrelar</option></select></label>
+   <label><span id="blc">Ciclo</span><input type="text" id="bc" list="bcl" placeholder="PM, AM, SD" autocomplete="off"></label>
+   <label id="bcaw" hidden><span>Ciclo alvo</span><input type="text" id="bca" list="bcl" placeholder="AM, PM, SD" autocomplete="off"></label>
+   <label><span id="blt">Transportadora</span><input type="text" id="bt" list="btl" placeholder="Nome da transportadora" autocomplete="off"></label>
+   <label id="bmw">Motivo<select id="bmot"><option>Não coube no veículo</option><option>Área de entrega bloqueada</option><option>Endereço fora da área de cobertura</option><option>Inclusão manual</option><option>Pacote não atrelado</option></select></label>
   </div>
   <div class="pre" id="bpre">
    <div class="fl" id="bpm"><span class="lb">Responsável MELI</span><div class="chips" id="bchm"></div>
     <div class="addn" id="bnr" hidden><input type="text" id="bnn" placeholder="Nome do novo responsável" autocomplete="off" aria-label="Nome do novo responsável"><button class="btn p" id="bns" type="button">Salvar nome</button></div></div>
-   <div class="fl"><span class="lb">Ciclo</span><div class="chips" id="bchc"></div>
+   <div class="fl"><span class="lb" id="lbc">Ciclo</span><div class="chips" id="bchc"></div>
     <div class="addn" id="bnrc" hidden><input type="text" id="bnc" placeholder="Novo ciclo (ex.: PM2)" autocomplete="off" aria-label="Novo ciclo"><button class="btn p" id="bsc" type="button">Salvar ciclo</button></div></div>
-   <div class="fl"><span class="lb">Transportadora</span><div class="chips" id="bcht"></div>
+   <div class="fl" id="bcag" hidden><span class="lb">Ciclo alvo</span><div class="chips" id="bchca"></div>
+    <div class="addn" id="bnra" hidden><input type="text" id="bna" placeholder="Novo ciclo alvo (ex.: PM2)" autocomplete="off" aria-label="Novo ciclo alvo"><button class="btn p" id="bsa" type="button">Salvar ciclo</button></div></div>
+   <div class="fl"><span class="lb" id="lbt">Transportadora</span><div class="chips" id="bcht"></div>
     <div class="addn" id="bnrt" hidden><input type="text" id="bnt" placeholder="Nome da nova transportadora" autocomplete="off" aria-label="Nome da nova transportadora"><button class="btn p" id="bst" type="button">Salvar transportadora</button></div></div>
   </div>
   <datalist id="brl"></datalist><datalist id="bcl"></datalist><datalist id="btl"></datalist>
@@ -423,7 +479,7 @@ body.semvalor .cv{display:none}
     <div class="card"><h2>Faltantes (<span id="bn3">0</span>)</h2><div class="tw"><table><thead><tr><th>ID</th><th>LOG responsável</th><th>Transportadora</th><th>Ciclo</th><th></th></tr></thead><tbody id="bt3"></tbody></table></div></div>
     <div class="card"><h2>Avarias (<span id="bn4">0</span>)</h2><div class="tw"><table><thead><tr><th>ID</th><th>LOG responsável</th><th>Transportadora</th><th>Ciclo</th><th></th></tr></thead><tbody id="bt4"></tbody></table></div></div>
   </section>
-  <div class="mf"><button class="btn" id="bclr">Limpar bipados</button><button class="btn" id="bxl">Exportar relatório em Excel</button><button class="btn p" id="bdone">Concluir</button></div>
+  <div class="mf"><button class="btn" id="bclr">Limpar bipados</button><button class="btn p" id="bdone">Concluir</button></div>
  </div>
 </div>
 
@@ -508,7 +564,7 @@ Chart.register({id:'vl',afterDatasetsDraw(ch){
   c.restore()}});
 function mk(id,cfg){
   if(charts[id])charts[id].destroy();
-  cfg.options={responsive:true,maintainAspectRatio:false,...cfg.options};
+  cfg.options={responsive:true,maintainAspectRatio:false,animation:false,...cfg.options};
   charts[id]=new Chart($('#'+id),cfg);
 }
 const hbar=(e,col)=>({type:'bar',data:{labels:e.map(x=>x[0]),datasets:[{data:e.map(x=>x[1]),backgroundColor:col,borderRadius:4}]},
@@ -526,7 +582,7 @@ function render(){
   mk('c3',hbar(L,PAL[2]));
   mk('c4',{type:'bar',data:{labels:cic,datasets:[{label:'Retirados',data:cic.map(c=>n(v.ret,c)),backgroundColor:PAL[0],borderRadius:4},{label:'À mais',data:cic.map(c=>n(v.mais,c)),backgroundColor:PAL[1],borderRadius:4}]},
     options:{plugins:{legend:{position:'bottom'}},layout:{padding:{top:18}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
-  tabelas();transportadora();faltantes();avarias();analise();valorGeral();
+  tabelas();transportadora();faltantes();avarias();analise();valorGeral();inclusao();
 }
 function tabelas(){
   const VM=valMap(),q=$('#q').value.toLowerCase(),v=view(),f=a=>a.filter(x=>(x.id+' '+x.resp).toLowerCase().includes(q));
@@ -652,6 +708,19 @@ function analise(){
 }
 
 /* ---------- transportadora ---------- */
+const inclList=v=>v.ret.filter(x=>x.motivo===INCL);
+function inclusao(){
+  const v=view(),a=inclList(v),VM=valMap(),q=($('#qi').value||'').toLowerCase();
+  const al=a.map(x=>({...x,alvo:x.cicloAlvo||'Não informado'})),A=cnt(al,'alvo'),T=cnt(al,'transp');
+  $('#tbni').textContent=a.length;$('#i1').textContent=a.length;
+  $('#i2').textContent=(A[0]||['-'])[0];$('#i2s').textContent=A[0]?`${A[0][1]} pacote${A[0][1]===1?'':'s'}`:'';
+  $('#i3').textContent=(T[0]||['-'])[0];$('#i3s').textContent=T[0]?`${T[0][1]} pacote${T[0][1]===1?'':'s'}`:'';
+  mk('c41',hbar(A,PAL[1]));mk('c42',hbar(T,PAL[2]));
+  const fl=new Map();al.forEach(x=>{const k=x.ciclo+'§'+x.alvo;fl.set(k,(fl.get(k)||0)+1)});
+  $('#ti1').innerHTML=[...fl].map(([k,n])=>{const s=k.split('§');return[s[0],s[1],n]}).sort((x,y)=>y[2]-x[2]).map(r=>`<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td>${r[2]}</td></tr>`).join('')||'<tr><td colspan="3">Nenhum registro</td></tr>';
+  const f=al.filter(x=>(x.id+' '+x.resp+' '+x.transp+' '+x.alvo).toLowerCase().includes(q));
+  $('#ti2').innerHTML=f.slice(0,2000).map(x=>`<tr><td>${x.id}</td><td>${esc(x.resp)}</td><td>${esc(x.ciclo)}</td><td>${esc(x.alvo)}</td><td>${esc(x.transp)}</td><td class="cv">${brl(VM.get(String(x.id)))}</td></tr>`).join('')||'<tr><td colspan="6">Nenhum registro</td></tr>';
+}
 function transportadora(){
   const v=view(),R=cnt(v.ret,'transp'),L=cnt(v.mais,'transp');
   const tot=t=>v.ret.filter(x=>x.transp===t).length+v.mais.filter(x=>x.transp===t).length;
@@ -683,6 +752,17 @@ function tbl(d,y,ttl,head,rows,w){
     let x=M+2;r.forEach((c,i)=>{d.text(String(c),x,y+4.2);x+=w[i]});y+=6});
   return y+10;
 }
+function graficosImg(){
+  const pg=$('#pg'),oculto=pg.hidden,o={};if(oculto)pg.hidden=false;
+  try{
+    ['c1','c2','c3','c4'].forEach(id=>{
+      const ch=charts[id],cv=$('#'+id);let u=null;
+      try{if(ch){ch.stop&&ch.stop();ch.resize();ch.update('none')}u=cv&&cv.width>0&&cv.height>0?cv.toDataURL('image/png',1):null}catch(e){}
+      o[id]=u&&u.length>100?{url:u,w:cv.width,h:cv.height}:null;
+    });
+  }finally{if(oculto)pg.hidden=true}
+  return o;
+}
 function gerarPDF(sel){
   sel=sel instanceof Set?sel:null;const ok=k=>!sel||sel.has(k);
   const {jsPDF}=window.jspdf,d=new jsPDF({unit:'mm',format:'a4'}),W=210,M=14,v=view();const VM=valMap(),hv=VM.size>0,vv=x=>hv?[brl(VM.get(String(x.id)))]:[];
@@ -700,14 +780,16 @@ function gerarPDF(sel){
   k.forEach((x,i)=>{const X=M+i*(kw+3);d.setFillColor(242,246,252);d.roundedRect(X,38,kw,20,2,2,'F');
     d.setTextColor(91,107,134);d.setFontSize(8);d.text(x[0].toUpperCase(),X+3,44);
     d.setTextColor(11,42,91);d.setFont('helvetica','bold');d.setFontSize(i==3?11:18);d.text(String(x[1]),X+3,53);d.setFont('helvetica','normal')});
-  // gráficos 2x2
-  y=66;const cw=(W-2*M-6)/2;
+  // gráficos 2x2 (capturados com a Visão geral visível, seja qual for a aba aberta)
+  const IMG=graficosImg(),G=[];y=66;const cw=(W-2*M-6)/2;
   [['c1','Retirados por responsável (MELI)'],['c2','Retirados por motivo'],['c3','À mais por responsável (LOG)'],['c4','Retirados x à mais por ciclo']].forEach((g,i)=>{
-    const cv=$('#'+g[0]),h=cw*cv.height/cv.width,X=M+(i%2)*(cw+6);
+    const im=IMG[g[0]],X=M+(i%2)*(cw+6),h=im?cw*im.h/im.w:24;
     d.setTextColor(30);d.setFont('helvetica','bold');d.setFontSize(10);d.text(g[1],X,y);
     d.setDrawColor(221,229,241);d.roundedRect(X,y+2,cw,h+2,2,2,'S');
-    d.addImage(cv.toDataURL('image/png',1),'PNG',X+1,y+3,cw-2,h);
-    if(i%2){y+=Math.max(h,cw*$('#'+['c1','c2','c3','c4'][i-1]).height/$('#'+['c1','c2','c3','c4'][i-1]).width)+12}});
+    if(im)d.addImage(im.url,'PNG',X+1,y+3,cw-2,h);
+    else{d.setFont('helvetica','normal');d.setFontSize(9);d.setTextColor(140);d.text('Gráfico indisponível',X+3,y+10)}
+    G[i]=h;
+    if(i%2)y+=Math.max(G[i-1],G[i])+12});
   // destaques
   const p=(a,t)=>t?Math.round(a/t*100):0,T=R[0]||['-',0],Mt=Mo[0]||['-',0],Lt=L[0]||['-',0],Ft=cnt(v.falt,'resp')[0]||['-',0],At=cnt(v.avar,'resp')[0]||['-',0];
   d.setFont('helvetica','bold');d.setFontSize(12);d.setTextColor(11,42,91);d.text('Destaques',M,y);y+=6;
@@ -719,13 +801,15 @@ function gerarPDF(sel){
    `- ${v.avar.length} pacotes com avaria; maior incidência LOG: ${At[0]} (${At[1]}).`,...(hv?[(()=>{const a=valSoma(v.ret,VM),b=valSoma(v.mais,VM),c=valSoma(v.falt,VM),e=valSoma(v.avar,VM);return '- Valor declarado: retirados '+brl(a.t)+' | à mais '+brl(b.t)+' | faltantes '+brl(c.t)+' | avarias '+brl(e.t)+'.'})()]:[])].forEach(s=>{d.text(s,M,y);y+=6});
   d.addPage();y=18;
   }
-  // tabelas
+  // tabelas (listas muito grandes são limitadas; a lista completa fica no Excel)
+  const LIMG=1000,tg=(ttl,head,rows,w)=>{const n=rows.length;y=tbl(d,y,ttl+(n>LIMG?' (primeiros '+LIMG+' de '+n+')':''),head,rows.slice(0,LIMG),w);if(n>LIMG){d.setFont('helvetica','normal');d.setFontSize(9);d.setTextColor(90);d.text('Lista completa disponível no Excel.',M,y-6)}};
 
-  if(ok('geral'))y=tbl(d,y,'Pacotes retirados',['ID','Responsável','Motivo','Ciclo',...(hv?['Valor']:[])],v.ret.map(x=>[x.id,x.resp,x.motivo,x.ciclo,...vv(x)]),hv?[32,34,60,24,32]:[38,40,76,28]);
-  if(ok('geral'))y=tbl(d,y,'Pacotes à mais',['ID','Responsável LOG','Ciclo',...(hv?['Valor']:[])],v.mais.map(x=>[x.id,x.resp,x.ciclo,...vv(x)]),hv?[38,74,32,38]:[38,106,38]);
-  if(ok('falt'))y=tbl(d,y,'Pacotes faltantes',['ID','Responsável LOG','Transportadora','Ciclo',...(hv?['Valor']:[])],v.falt.map(x=>[x.id,x.resp,x.transp,x.ciclo,...vv(x)]),hv?[34,48,46,22,32]:[38,60,56,28]);
-  if(ok('avar'))y=tbl(d,y,'Pacotes com avaria',['ID','Responsável LOG','Transportadora','Ciclo',...(hv?['Valor']:[])],v.avar.map(x=>[x.id,x.resp,x.transp,x.ciclo,...vv(x)]),hv?[34,48,46,22,32]:[38,60,56,28]);
+  if(ok('geral'))tg('Pacotes retirados',['ID','Responsável','Motivo','Ciclo',...(hv?['Valor']:[])],v.ret.map(x=>[x.id,x.resp,x.motivo,x.ciclo,...vv(x)]),hv?[32,34,60,24,32]:[38,40,76,28]);
+  if(ok('geral'))tg('Pacotes à mais',['ID','Responsável LOG','Ciclo',...(hv?['Valor']:[])],v.mais.map(x=>[x.id,x.resp,x.ciclo,...vv(x)]),hv?[38,74,32,38]:[38,106,38]);
+  if(ok('falt'))tg('Pacotes faltantes',['ID','Responsável LOG','Transportadora','Ciclo',...(hv?['Valor']:[])],v.falt.map(x=>[x.id,x.resp,x.transp,x.ciclo,...vv(x)]),hv?[34,48,46,22,32]:[38,60,56,28]);
+  if(ok('avar'))tg('Pacotes com avaria',['ID','Responsável LOG','Transportadora','Ciclo',...(hv?['Valor']:[])],v.avar.map(x=>[x.id,x.resp,x.transp,x.ciclo,...vv(x)]),hv?[34,48,46,22,32]:[38,60,56,28]);
   const fa=filtrosAtivos(),ft=n=>{const f=fa.find(z=>z[0]===n);return f?' ['+f[1]+']':''},cut=(t,n)=>{t=String(t==null?'':t);return t.length>n?t.slice(0,n-1)+'.':t},LIM=400;
+  if(ok('inc')){const I=inclList(v);tg('Inclusão manual - '+I.length+' pacote'+(I.length===1?'':'s'),['ID','Responsável MELI','Ciclo retirada','Ciclo alvo','Transportadora alvo',...(hv?['Valor']:[])],I.map(x=>[x.id,cut(x.resp,18),x.ciclo,x.cicloAlvo||'-',cut(x.transp,hv?22:34),...vv(x)]),hv?[28,36,24,22,42,30]:[32,38,26,24,62])}
   if(ok('fis')){const F=cruzar().fis;y=tbl(d,y,'Físico - '+F.length+' ID'+(F.length===1?'':'s')+(F.some(x=>x.valor!=null)?' - '+brl(sm(F)):''),['ID','Status bipado','Estado','Situação','Valor declarado'],F.slice(0,LIM).map(x=>[x.id,x.st,cut(x.estado,16),cut(x.sit,12),brl(x.valor)]),[38,34,34,28,48])}
   if((DATA.aud||[]).length&&ok('sist')){
     const S=sisFiltrado();
@@ -747,7 +831,10 @@ function gerarPDF(sel){
 let BIP=[];
 try{BIP=JSON.parse(localStorage.getItem('pcts_bip')||'[]')}catch(e){BIP=[]}
 const saveBip=()=>{try{localStorage.setItem('pcts_bip',JSON.stringify(BIP))}catch(e){}};
-const canonMot=s=>{const k=semAc(s);return k==='nao cabe no veiculo'?'Não cabe no veículo':k==='area bloqueada'?'Área bloqueada':k==='fora de area'?'Fora de área':k==='autorizado a retirada'?'Autorizado a retirada':k==='inclusao manual'?'Inclusão manual':k==='pcts sem atrelar'||k==='pct sem atrelar'?'PCTs sem atrelar':s};
+const INCL='Inclusão manual';
+const MOT_ALIAS={'nao cabe no veiculo':'Não coube no veículo','nao coube no veiculo':'Não coube no veículo','capacidade do veiculo excedida':'Não coube no veículo','area bloqueada':'Área de entrega bloqueada','area de entrega bloqueada':'Área de entrega bloqueada','fora de area':'Endereço fora da área de cobertura','endereco fora da area de cobertura':'Endereço fora da área de cobertura','autorizado a retirada':'Retirada autorizada','retirada autorizada':'Retirada autorizada','inclusao manual':'Inclusão manual','pcts sem atrelar':'Pacote não atrelado','pct sem atrelar':'Pacote não atrelado','pacote nao atrelado':'Pacote não atrelado','pacotes sem vinculacao':'Pacote não atrelado','pacote sem vinculacao':'Pacote não atrelado'};
+const canonMot=s=>MOT_ALIAS[semAc(s)]||s;
+BIP.forEach(x=>{if(x&&x.motivo)x.motivo=canonMot(x.motivo)});
 const baseAll=()=>[...DATA.ret,...DATA.mais,...(DATA.mov||[])];
 function refreshFc(){
   const cur=$('#fc').value;
@@ -787,6 +874,13 @@ const cicTodos=()=>[...CIC_PRE,...CIC_EXTRA];
 const igual=(a,b)=>String(a||'').trim().toLowerCase()===String(b||'').trim().toLowerCase();
 function bipChips(){
   const vr=$('#br').value,vt=$('#bt').value;
+  const inc=$('#bs').value==='Retirado'&&canonMot($('#bmot').value)===INCL;
+  $('#blc').textContent=$('#lbc').textContent=inc?'Ciclo de retirada':'Ciclo';
+  $('#blt').textContent=$('#lbt').textContent=inc?'Transportadora Alvo':'Transportadora';
+  $('#bt').placeholder=inc?'Transportadora alvo':'Nome da transportadora';
+  $('#bcaw').hidden=!inc;$('#bcag').hidden=!inc;
+  const va=$('#bca').value;
+  $('#bchca').innerHTML=cicTodos().map(n=>{const ex=CIC_EXTRA.some(x=>igual(x,n));return `<button type="button" class="chip" data-ca="${esc(n)}" aria-pressed="${igual(n,va)}">${esc(n)}${ex?`<span class="cx" data-rca="${esc(n)}" title="Remover da lista" aria-label="Remover ${esc(n)} da lista">×</span>`:''}</button>`}).join('')+'<button type="button" class="chip add" id="bnewa">＋ Novo</button>';
   $('#bpm').hidden=$('#bs').value!=='Retirado';
   $('#bchm').innerHTML=meliTodos().map(n=>{const ex=MELI_EXTRA.some(x=>igual(x,n));return `<button type="button" class="chip" data-m="${esc(n)}" aria-pressed="${igual(n,vr)}">${esc(n)}${ex?`<span class="cx" data-rm="${esc(n)}" title="Remover da lista" aria-label="Remover ${esc(n)} da lista">×</span>`:''}</button>`}).join('')+'<button type="button" class="chip add" id="bnew">＋ Novo</button>';
   const vc=$('#bc').value;
@@ -808,6 +902,13 @@ function trSalvar(){
   $('#bt').value=n;$('#bnt').value='';$('#bnrt').hidden=true;
   bipChips();bipMsg('');
 }
+function cicAlvoSalvar(){
+  const n=String($('#bna').value).trim().replace(/\s+/g,' ').toUpperCase();
+  if(!n){$('#bna').focus();return}
+  if(!cicTodos().some(x=>igual(x,n))){CIC_EXTRA.push(n);saveCic()}
+  $('#bca').value=cicTodos().find(x=>igual(x,n));$('#bna').value='';$('#bnra').hidden=true;
+  bipChips();bipMsg('');
+}
 function cicSalvar(){
   const n=String($('#bnc').value).trim().replace(/\s+/g,' ').toUpperCase();
   if(!n){$('#bnc').focus();return}
@@ -816,6 +917,12 @@ function cicSalvar(){
   bipChips();bipMsg('');
 }
 $('#bpre').addEventListener('click',e=>{
+  const rca=e.target.closest('[data-rca]');
+  if(rca){e.stopPropagation();const n=rca.dataset.rca;CIC_EXTRA=CIC_EXTRA.filter(x=>!igual(x,n));saveCic();if(igual($('#bca').value,n))$('#bca').value='';if(igual($('#bc').value,n))$('#bc').value='';bipChips();return}
+  if(e.target.closest('#bnewa')){const r=$('#bnra');r.hidden=!r.hidden;if(!r.hidden)$('#bna').focus();return}
+  if(e.target.closest('#bsa')){cicAlvoSalvar();return}
+  const ca=e.target.closest('[data-ca]');
+  if(ca){$('#bca').value=igual($('#bca').value,ca.dataset.ca)?'':ca.dataset.ca;bipChips();return}
   const rt=e.target.closest('[data-rt]');
   if(rt){e.stopPropagation();const n=rt.dataset.rt;TR_EXTRA=TR_EXTRA.filter(x=>!igual(x,n));saveTr();if(igual($('#bt').value,n))$('#bt').value='';bipChips();return}
   if(e.target.closest('#bnewt')){const r=$('#bnrt');r.hidden=!r.hidden;if(!r.hidden)$('#bnt').focus();return}
@@ -836,13 +943,14 @@ $('#bpre').addEventListener('click',e=>{
   if(e.target.closest('#bns'))meliSalvar();
 });
 $('#bnt').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();trSalvar()}});
+$('#bna').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();cicAlvoSalvar()}});
 $('#bnc').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();cicSalvar()}});
 $('#bnn').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();meliSalvar()}});
-$('#br').addEventListener('input',bipChips);$('#bc').addEventListener('input',bipChips);$('#bt').addEventListener('input',bipChips);
+$('#br').addEventListener('input',bipChips);$('#bca').addEventListener('input',bipChips);$('#bmot').addEventListener('change',bipChips);$('#bc').addEventListener('input',bipChips);$('#bt').addEventListener('input',bipChips);
 function bipLista(){
   const R=BIP.filter(x=>x.status==='Retirado'),L=BIP.filter(x=>x.status==='À mais'),F=BIP.filter(x=>x.status==='Faltante'),A=BIP.filter(x=>x.status==='Avaria');
   $('#bn1').textContent=R.length;$('#bn2').textContent=L.length;$('#bn3').textContent=F.length;$('#bn4').textContent=A.length;
-  const row=x=>`<tr><td>${x.id}</td><td>${esc(x.resp)}</td><td>${esc(x.transp)}</td><td>${esc(x.ciclo)}</td><td><button class="x" data-id="${x.id}" title="Remover" aria-label="Remover ${x.id}">×</button></td></tr>`;
+  const row=x=>`<tr><td>${x.id}</td><td>${esc(x.resp)}</td><td>${esc(x.transp)}</td><td>${esc(x.ciclo)}${x.cicloAlvo?' → '+esc(x.cicloAlvo):''}</td><td><button class="x" data-id="${x.id}" title="Remover" aria-label="Remover ${x.id}">×</button></td></tr>`;
   $('#bt1').innerHTML=R.slice().reverse().map(row).join('')||'<tr><td colspan="5">Nenhum ID bipado</td></tr>';
   $('#bt2').innerHTML=L.slice().reverse().map(row).join('')||'<tr><td colspan="5">Nenhum ID bipado</td></tr>';
   $('#bt3').innerHTML=F.slice().reverse().map(row).join('')||'<tr><td colspan="5">Nenhum ID bipado</td></tr>';
@@ -863,7 +971,9 @@ function bipAdd(){
   const ids=bipIds($('#bid').value);
   if(!ids.length){bipMsg('Digite ou bipe um ID válido (8 dígitos ou mais).','bad');return}
   const st=$('#bs').value,ex=new Map([...baseAll(),...BIP].map(x=>[x.id,x]));
-  const base={status:st,resp:nome($('#br').value),transp:canonTr($('#bt').value),ciclo:String($('#bc').value).trim().toUpperCase()||'Sem ciclo',motivo:st==='Retirado'?(cap(String($('#bmot').value).trim())||'Não informado'):'',at:new Date().toISOString()};
+  const inc=st==='Retirado'&&canonMot($('#bmot').value)===INCL,cr=String($('#bc').value).trim().toUpperCase(),ca=String($('#bca').value).trim().toUpperCase();
+  if(inc&&(!cr||!ca)){bipMsg('Inclusão manual: informe o ciclo de retirada e o ciclo alvo.','bad');(!cr?$('#bc'):$('#bca')).focus();return}
+  const base={status:st,resp:nome($('#br').value),transp:canonTr($('#bt').value),ciclo:cr||'Sem ciclo',cicloAlvo:inc?ca:'',motivo:st==='Retirado'?(canonMot($('#bmot').value)||'Não informado'):'',at:new Date().toISOString()};
   let ok=0;const dup=[];
   ids.forEach(id=>{if(ex.has(id))dup.push(id);else{BIP.push({...base,id});ex.set(id,base);ok++}});
   $('#bid').value='';
@@ -937,6 +1047,7 @@ function exportarExcel(sel){
   if(ok('geral'))XLSX.utils.book_append_sheet(wb,folha(hv?[...XHM,'Valor declarado']:XHM,mais,[16,30,22,10,20,16]),'À mais');
   if(ok('falt'))XLSX.utils.book_append_sheet(wb,folha(hv?[...XHM,'Valor declarado']:XHM,falt,[16,30,22,10,20,16]),'Faltantes');
   if(ok('avar'))XLSX.utils.book_append_sheet(wb,folha(hv?[...XHM,'Valor declarado']:XHM,avar,[16,30,22,10,20,16]),'Avarias');
+  if(ok('inc')){const VMx=valMap();const I=BF().filter(x=>x.status==='Retirado'&&x.motivo===INCL).map(x=>[String(x.id),x.resp||'',x.ciclo||'',x.cicloAlvo||'',x.transp||NI,horaFmt(x),...(hv?[VMx.get(String(x.id))??'']:[])]);XLSX.utils.book_append_sheet(wb,folha(['ID','MELI responsável','Ciclo de retirada','Ciclo alvo','Transportadora alvo','Bipado em',...(hv?['Valor declarado']:[])],I,[16,30,18,16,28,20,16]),'Inclusão manual')}
   if(au.length){
     if(ok('fis'))XLSX.utils.book_append_sheet(wb,folha(['ID','Status bipado','Estado na planilha','Situação','Resultado','Placa','Rota','Rep auditoria','Responsável','Transportadora','Ciclo','Data auditoria','Status do envio','Valor declarado'],cz.fis.map(x=>[x.id,x.st,x.estado,x.sit,x.res,x.placa,x.rota,x.rep,x.resp,x.transp,x.ciclo,x.data,x.status?x.status+' / '+x.sub:'',x.valor==null?'':x.valor]),[14,14,18,11,62,12,24,34,24,20,8,20,22,16]),'Físico');
     if(ok('sist'))XLSX.utils.book_append_sheet(wb,folha(['ID','Estado','Resultado','Placa','Rota','Rep auditoria','Data auditoria','Status do envio','Valor declarado'],sisFiltrado().map(x=>[x.id,x.estado,x.res,x.placa,x.rota,x.rep,x.data,x.status?x.status+' / '+x.sub:'',x.valor==null?'':x.valor]),[14,10,56,12,24,34,20,22,16]),'Sistêmica');
@@ -947,7 +1058,7 @@ function exportarExcel(sel){
   if(wb.SheetNames&&!wb.SheetNames.length){alert('Não há dados para exportar nas abas escolhidas.');return}
   XLSX.writeFile(wb,'relatorio-controle-de-pacotes-'+new Date().toISOString().slice(0,10)+'.xlsx');
 }
-$('#xls').onclick=exportarExcel;$('#bxl').onclick=exportarExcel;
+$('#xls').onclick=exportarExcel;
 
 /* ---------- movimentação: Sistêmica -> Pacotes movimentados (Reatribuição) ---------- */
 const SELS=new Set(),SELR=new Set();
@@ -1253,13 +1364,13 @@ function valorGeral(){
 }
 /* ---------- abas ---------- */
 function abaTrocar(t){
-  $('#pg').hidden=t!=='geral';$('#pf').hidden=t!=='falt';$('#pa').hidden=t!=='avar';$('#pfi').hidden=t!=='fis';$('#psi').hidden=t!=='sist';$('#pd').hidden=t!=='desc';
+  $('#pg').hidden=t!=='geral';$('#pf').hidden=t!=='falt';$('#pa').hidden=t!=='avar';$('#pi').hidden=t!=='inc';$('#pfi').hidden=t!=='fis';$('#psi').hidden=t!=='sist';$('#pd').hidden=t!=='desc';
   document.querySelectorAll('.tb').forEach(b=>{const on=b.dataset.tab===t;b.classList.toggle('on',on);b.setAttribute('aria-selected',on)});
   const an=$('#abanome');if(an)an.textContent=NOMEABA[t]||'';
   Object.values(charts).forEach(c=>{try{c.resize()}catch(e){}});
 }
 document.querySelectorAll('.tb').forEach(b=>b.onclick=()=>abaTrocar(b.dataset.tab));
-const NOMEABA={geral:'Visão geral',falt:'Faltantes',avar:'Avarias',fis:'Físico',sist:'Sistêmica',desc:'Desconteinerizado'};
+const NOMEABA={geral:'Visão geral',falt:'Faltantes',avar:'Avarias',inc:'Inclusão manual',fis:'Físico',sist:'Sistêmica',desc:'Desconteinerizado'};
 function gaveta(a){
   $('#tabsnav').classList.toggle('open',a);$('#ov').hidden=!a;$('#hb').setAttribute('aria-expanded',a?'true':'false');
   if(a){const on=$('#tabsnav .tb.on');if(on)on.focus()}else $('#hb').focus();
@@ -1279,7 +1390,7 @@ document.addEventListener('click',()=>abreMenu(false));
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#mnl').hidden){abreMenu(false);$('#mnb').focus()}});
 
 /* ---------- eventos e início ---------- */
-$('#fc').onchange=render;$('#q').oninput=tabelas;$('#qf').oninput=tabelaFalt;$('#qa').oninput=tabelaAvar;$('#qy').oninput=tabelaSist;$('#sfe').onchange=tabelaSist;$('#qp').oninput=tabelaFis;$('#sfp').onchange=tabelaFis;$('#pdf').onclick=()=>{gerarPDF();if(BIP.length)exportarExcel()};
+$('#fc').onchange=render;$('#q').oninput=tabelas;$('#qf').oninput=tabelaFalt;$('#qa').oninput=tabelaAvar;$('#qi').oninput=inclusao;$('#bia2').onclick=()=>{bipAbrir('Retirado');$('#bmot').value=INCL;bipChips()};$('#qy').oninput=tabelaSist;$('#sfe').onchange=tabelaSist;$('#qp').oninput=tabelaFis;$('#sfp').onchange=tabelaFis;$('#pdf').onclick=()=>{gerarPDF();if(BIP.length)exportarExcel()};
 $('#file').onchange=e=>{const f=e.target.files[0];if(f)f.arrayBuffer().then(b=>load(b,f.name))};
 (async()=>{
   setData(DATA,SRC); // começa zerado até haver planilha
@@ -1288,9 +1399,9 @@ $('#file').onchange=e=>{const f=e.target.files[0];if(f)f.arrayBuffer().then(b=>l
 })();
 
 /* ---------- janela de escolha de abas ---------- */
-const ABAS=[['geral','Visão geral','Retirados e À mais'],['falt','Faltantes','Bipados como faltante'],['avar','Avarias','Bipados como avaria'],['fis','Físico','Bipados × planilha Sistêmica'],['sist','Sistêmica','Planilha de auditoria e movimentados'],['desc','Desconteinerizado','Problem solving e Reatribuição']];
+const ABAS=[['geral','Visão geral','Retirados e À mais'],['falt','Faltantes','Bipados como faltante'],['avar','Avarias','Bipados como avaria'],['inc','Inclusão manual','Retirados por inclusão manual'],['fis','Físico','Bipados × planilha Sistêmica'],['sist','Sistêmica','Planilha de auditoria e movimentados'],['desc','Desconteinerizado','Problem solving e Reatribuição']];
 const CARGAS=[['auto','Detectar automaticamente','Recomendado: o Dashboard identifica o tipo pelo cabeçalho'],['main','Visão geral','Planilha de Retirados / À mais'],['sis','Sistêmica e Físico','Planilha de auditoria (SHIPMENT) ou de valor declarado (ID do envio)'],['desc','Desconteinerizado','Arquivo de problem solving (coluna ID do pacote)']];
-function contaAba(k){const v=view();return{geral:v.ret.length+v.mais.length,falt:v.falt.length,avar:v.avar.length,fis:CUR.fis.length,sist:CUR.sis.length,desc:DESC.length}[k]}
+function contaAba(k){const v=view();return{geral:v.ret.length+v.mais.length,falt:v.falt.length,avar:v.avar.length,inc:inclList(v).length,fis:CUR.fis.length,sist:CUR.sis.length,desc:DESC.length}[k]}
 let SMT='';
 function smAbrir(tipo){
   SMT=tipo;const o=$('#smo');$('#smlimpa').hidden=tipo!=='load';$('#smcw').hidden=tipo==='load';$('#smwa').hidden=tipo!=='pdf';
@@ -1344,21 +1455,29 @@ function textoRelatorio(ciclo){
     const mo=cnt(v.ret,'motivo');
     if(mo.length)mo.forEach(([k,n])=>ln.push(`- ${k}: ${n} ${pl(n)} (${pc(n,v.ret.length)}%)`+(vo(v.ret.filter(x=>x.motivo===k))?' —'+vo(v.ret.filter(x=>x.motivo===k)).replace(/[()]/g,''):'')));
     else ln.push('- Sem registros.');
-    ln.push('','*3. RETIRADOS POR RESPONSÁVEL (MELI)*');
+    ln.push('','*3. INCLUSÃO MANUAL*');
+    const im=inclList(v);
+    if(im.length){
+      ln.push(`- Total: ${im.length} ${pl(im.length)}`+vo(im));
+      const fx=new Map();im.forEach(x=>{const k=x.ciclo+'§'+(x.cicloAlvo||'não informado');fx.set(k,(fx.get(k)||0)+1)});
+      [...fx].sort((a,b)=>b[1]-a[1]).forEach(([k,n])=>{const s=k.split('§');ln.push(`- Retirado no ciclo ${s[0]} para o ciclo alvo ${s[1]}: ${n} ${pl(n)}`)});
+      cnt(im,'transp').forEach(([k,n])=>ln.push(`- Transportadora alvo ${k}: ${n} ${pl(n)}`));
+    }else ln.push('- Sem registros.');
+    ln.push('','*4. RETIRADOS POR RESPONSÁVEL (MELI)*');
     const rs=cnt(v.ret,'resp');
     if(rs.length)rs.forEach(([k,n])=>{
       const it=v.ret.filter(x=>x.resp===k),dm=cnt(it,'motivo').map(([mk,mn])=>`${mn} ${mk}`).join(' | ');
       ln.push(`- ${k}: ${n} ${pl(n)} (${pc(n,v.ret.length)}%)`+(dm?` — ${dm}`:''));
     });else ln.push('- Sem registros.');
-    ln.push('','*4. PACOTES À MAIS POR RESPONSÁVEL (LOG)*');
+    ln.push('','*5. PACOTES À MAIS POR RESPONSÁVEL (LOG)*');
     const ls=cnt(v.mais,'resp');
     if(ls.length)ls.forEach(([k,n])=>ln.push(`- ${k}: ${n} ${pl(n)}`+vo(v.mais.filter(x=>x.resp===k))));
     else ln.push('- Sem registros.');
-    ln.push('','*5. RESUMO POR TRANSPORTADORA*');
+    ln.push('','*6. RESUMO POR TRANSPORTADORA*');
     const tr=[...new Set([...v.ret,...v.mais].map(x=>x.transp))].map(k=>{const r=v.ret.filter(x=>x.transp===k).length,l=v.mais.filter(x=>x.transp===k).length;return[k,r,l]}).sort((x,y)=>(y[1]+y[2])-(x[1]+x[2])||String(x[0]).localeCompare(y[0]));
     if(tr.length)tr.forEach(([k,r,l])=>ln.push(`- ${k}: ${r+l} total (${r} ${r===1?'retirado':'retirados'} | ${l} à mais)`));
     else ln.push('- Sem registros.');
-    ln.push('','*6. DESCONTEINERIZADO*');
+    ln.push('','*7. DESCONTEINERIZADO*');
     ln.push(DESC.length?`- ${DESC.length} ${pl(DESC.length)} registrados no arquivo carregado.`:'- Sem arquivo carregado nesta aba.');
     return ln.join('\n');
   });
@@ -1381,15 +1500,72 @@ $('#smok').onclick=()=>{
   const sel=new Set([...document.querySelectorAll('#smo input[name=sa]:checked')].map(c=>c.value));
   if(!sel.size){$('#smn').textContent='Marque pelo menos uma aba.';return}
   const tambem=SMT==='pdf'&&$('#smxl')&&$('#smxl').checked;
-  const cic=$('#smcic').value;smFechar();
-  comCiclo(cic,()=>{exportaSel(SMT,sel);if(tambem)exportaSel('xls',sel)});
+  const cic=$('#smcic').value,b=$('#smok'),tx=b.textContent;
+  b.disabled=true;b.textContent='Gerando...';$('#smn').textContent='Gerando o relatório, aguarde...';
+  setTimeout(()=>{
+    try{comCiclo(cic,()=>{exportaSel(SMT,sel);if(tambem)exportaSel('xls',sel)});smFechar()}
+    catch(e){console.error(e);$('#smn').textContent='Não foi possível gerar o relatório: '+((e&&e.message)||e)+'. Tente marcar menos abas ou use o Excel.'}
+    finally{b.disabled=false;b.textContent=tx}
+  },40);
 };
 $('#fsel').onchange=e=>{const f=e.target.files[0],k=e.target.dataset.k||'auto';if(f)f.arrayBuffer().then(b=>load(b,f.name,k));e.target.value=''};
 $('#smx').onclick=$('#smc').onclick=smFechar;
 $('#sm').addEventListener('click',e=>{if(e.target===$('#sm'))smFechar()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sm').hidden)smFechar()});
+/* ---------- lembretes ---------- */
+const URGN={alta:'Alta',media:'Média',baixa:'Baixa'},URGO={alta:0,media:1,baixa:2};
+let LEMB=[],LURG='media',LUNDO=null,LUT=null;
+function lembCarregar(){try{const a=JSON.parse(localStorage.getItem('cp_lembretes')||'[]');LEMB=Array.isArray(a)?a.filter(x=>x&&typeof x.nome==='string'&&x.nome.trim()&&URGO[x.urg]!=null&&x.id):[]}catch(e){LEMB=[]}}
+const lembSalvar=()=>{try{localStorage.setItem('cp_lembretes',JSON.stringify(LEMB))}catch(e){}};
+const lembOrd=()=>LEMB.slice().sort((a,b)=>URGO[a.urg]-URGO[b.urg]||(a.criado||0)-(b.criado||0));
+function lembRender(){
+  const o=lembOrd(),bar=$('#lbar'),vis=o.length>0||!!LUNDO;
+  document.body.classList.toggle('tem-lemb',vis);bar.hidden=!vis;
+  bar.innerHTML=`<button type="button" class="lbtn" id="lopen" title="Abrir lembretes">Lembretes (${o.length})</button>`
+    +o.map(x=>`<div class="pit ${x.urg}" role="group" aria-label="Lembrete de urgência ${URGN[x.urg]}: ${esc(x.nome)}"><b class="lu">${URGN[x.urg]}</b><span class="ln" title="${esc(x.nome)}">${esc(x.nome)}</span><button type="button" class="lok" data-lc="${esc(x.id)}" aria-label="Concluir o lembrete ${esc(x.nome)}">✓ Concluir</button></div>`).join('')
+    +(LUNDO?`<div class="lun">Concluído: ${esc(LUNDO.nome)} <button type="button" id="lundo">Desfazer</button></div>`:'');
+  $('#alc').textContent=o.length||'›';
+  $('#lmc').textContent=o.length;
+  $('#lml').innerHTML=o.map(x=>`<div class="lrow"><span class="lu ${x.urg}">${URGN[x.urg]}</span><span class="ln">${esc(x.nome)}</span><button type="button" class="btn" data-lc="${esc(x.id)}">Concluir</button></div>`).join('')||'<p class="smd">Nenhum lembrete ativo.</p>';
+  $('#lmu').innerHTML=Object.keys(URGN).map(k=>`<button type="button" class="chip" data-u="${k}" aria-pressed="${k===LURG}">${URGN[k]}</button>`).join('');
+}
+function lembAdicionar(){
+  const n=$('#lmn').value.trim().replace(/\s+/g,' ');
+  if(!n){$('#lmm').textContent='Digite o nome do lembrete.';$('#lmn').focus();return}
+  $('#lmm').textContent='';
+  LEMB.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),nome:n.slice(0,80),urg:LURG,criado:Date.now()});
+  lembSalvar();$('#lmn').value='';lembRender();$('#lmn').focus();
+}
+function lembConcluir(id){
+  const x=LEMB.find(l=>l.id===id);if(!x)return;
+  LEMB=LEMB.filter(l=>l.id!==id);lembSalvar();
+  LUNDO=x;clearTimeout(LUT);LUT=setTimeout(()=>{LUNDO=null;lembRender()},6000);
+  lembRender();
+}
+function lembDesfazer(){
+  if(!LUNDO)return;
+  if(!LEMB.some(l=>l.id===LUNDO.id))LEMB.push(LUNDO);
+  LUNDO=null;clearTimeout(LUT);lembSalvar();lembRender();
+}
+const lembAbrir=()=>{$('#lm').hidden=false;lembRender();setTimeout(()=>$('#lmn').focus(),0)};
+const lembFechar=()=>{$('#lm').hidden=true};
+function lembClick(e){
+  const c=e.target.closest('[data-lc]');if(c){lembConcluir(c.dataset.lc);return}
+  if(e.target.closest('#lundo')){lembDesfazer();return}
+  if(e.target.closest('#lopen')){lembAbrir();return}
+  const u=e.target.closest('[data-u]');if(u){LURG=u.dataset.u;lembRender()}
+}
+$('#lbar').addEventListener('click',lembClick);
+$('#lm').addEventListener('click',e=>{if(e.target===$('#lm')){lembFechar();return}lembClick(e)});
+$('#lmx').onclick=lembFechar;$('#lma').onclick=lembAdicionar;
+$('#lmn').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();lembAdicionar()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#lm').hidden)lembFechar()});
+window.addEventListener('storage',e=>{if(e.key==='cp_lembretes'){lembCarregar();lembRender()}});
+lembCarregar();lembRender();
 const acao=f=>()=>{gaveta(false);f()};
 $('#acl').onclick=acao(()=>smAbrir('load'));$('#acp').onclick=acao(()=>smAbrir('pdf'));
+$('#acr').onclick=acao(lembAbrir);
+$('#acm').onclick=acao(()=>window.open('https://logdevz.github.io/KN-MESCLA/','_blank','noopener'));
 $('#smlimpa').onclick=()=>{smFechar();limparTudo()};
 </script>
 </body>
