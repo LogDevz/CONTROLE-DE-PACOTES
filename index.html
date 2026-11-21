@@ -162,6 +162,10 @@ body.semvalor .cv{display:none}
 .pre .addn input{flex:1;min-width:0;font:inherit;font-size:.9rem;border-radius:8px;border:1px solid var(--line);padding:7px 11px}
 :root{--lh:0px}
 body.tem-lemb{--lh:46px;padding-top:var(--lh)}
+#lcol{flex:none;position:sticky;left:0;font:inherit;font-size:.8rem;font-weight:700;color:var(--pri);background:#fff;border:1px solid #c8d9f2;border-radius:8px;padding:6px 10px;cursor:pointer}
+#lcol:hover{background:#e8f0fb}
+#sm .md{margin:auto}
+.tabs .ta[hidden]{display:none}
 .ov{padding-top:calc(24px + var(--lh))}
 .tabs{top:var(--lh)}
 #lbar{position:fixed;top:0;left:0;right:0;height:46px;z-index:90;display:flex;align-items:center;gap:10px;padding:0 12px;background:#eaf2fe;border-bottom:1px solid #c8d9f2;overflow-x:auto;white-space:nowrap}
@@ -201,6 +205,7 @@ body.tem-lemb{--lh:46px;padding-top:var(--lh)}
 </head>
 <body>
 <div id="lbar" hidden role="region" aria-label="Barra superior">
+ <button type="button" id="lcol" title="Recolher barra superior" aria-label="Recolher barra superior">▲ Recolher</button>
  <div id="vbusca" hidden><input type="search" id="vq" placeholder="Buscar rota (ex.: I10, SD B2)" autocomplete="off" aria-label="Buscar rota no planejamento de vagas"><span id="vmsg" role="status"></span></div>
  <div id="lnotes"></div>
 </div>
@@ -237,11 +242,11 @@ body.tem-lemb{--lh:46px;padding-top:var(--lh)}
   </div>
 </header>
 <div id="ov" hidden></div>
-<div class="ov" id="sm" hidden role="dialog" aria-modal="true" aria-labelledby="smt" style="z-index:70;align-items:center">
+<div class="ov" id="sm" hidden role="dialog" aria-modal="true" aria-labelledby="smt" style="z-index:70;align-items:flex-start">
   <div class="md" style="max-width:480px">
     <div class="mh"><h2 id="smt"></h2><button class="btn" id="smx" type="button">Fechar</button></div>
     <p class="smd" id="smd"></p>
-    <label class="smf" id="smcw" hidden>Ciclo do relatório<select id="smcic"></select></label>
+    <div class="smf" id="smcw" hidden><span>Ciclos do relatório (escolha um ou mais)</span><div class="chips" id="smcic"></div></div>
     <div class="so" id="smo"></div>
     <p class="smd" id="smn"></p>
     <div class="mf"><button class="btn" id="smlimpa" type="button" hidden style="color:#c62828;margin-right:auto">Limpar todos os dados</button><button class="btn" id="smwa" type="button" hidden>Relatório em texto</button><button class="btn" id="smc" type="button">Cancelar</button><button class="btn p" id="smok" type="button"></button></div>
@@ -250,7 +255,7 @@ body.tem-lemb{--lh:46px;padding-top:var(--lh)}
 <div class="ov" id="wm" hidden role="dialog" aria-modal="true" aria-labelledby="wmt" style="z-index:80">
  <div class="md wm" style="max-width:680px">
   <div class="mh"><h2 id="wmt">Relatório em texto</h2><button class="btn" id="wx" type="button">Fechar</button></div>
-  <label>Ciclo<select id="wc"></select></label>
+  <div class="smf"><span>Ciclos do relatório (escolha um ou mais)</span><div class="chips" id="wc"></div></div>
   <textarea id="wt" aria-label="Texto do relatório"></textarea>
   <p id="wmsg" role="status"></p>
   <div class="mf"><button class="btn" id="wcp" type="button">Copiar</button><button class="btn p" id="wwa" type="button">Abrir no WhatsApp</button></div>
@@ -271,6 +276,7 @@ body.tem-lemb{--lh:46px;padding-top:var(--lh)}
   <details class="gv"><summary class="tl">Ações</summary><div class="gi">
   <button class="ta" id="acl" type="button">Carregar arquivo <i>›</i></button>
   <button class="ta" id="acp" type="button">Gerar Relatório <i>›</i></button>
+  <button class="ta" id="acq" type="button">Pesquisar rotas <i>›</i></button>
   <button class="ta" id="acr" type="button">Lembretes <i id="alc">›</i></button>
   <button class="ta" id="acm" type="button">Mesclar Planilhas <i>↗</i></button>
   </div></details>
@@ -428,7 +434,7 @@ body.tem-lemb{--lh:46px;padding-top:var(--lh)}
 
  <div class="pane" id="pd" hidden>
   <p id="dmsg"></p>
-  <div class="chips" style="margin:0 0 10px"><button class="btn p" id="dpdf" type="button">Baixar relatório PDF</button><button class="btn" id="dxls" type="button">Exportar relatório em Excel</button><span style="font-size:.82rem;color:var(--mut)">Os relatórios seguem os filtros de Período, Ciclo e demais filtros desta aba.</span></div>
+  <div class="chips" style="margin:0 0 10px"><button class="btn" id="dxls" type="button">Exportar relatório em Excel</button><span style="font-size:.82rem;color:var(--mut)">Os relatórios seguem os filtros de Período, Ciclo e demais filtros desta aba.</span></div>
   <section class="kpis">
     <div class="card kpi"><span>Total desconteinerizado</span><b id="d1">0</b><i id="d1s"></i></div>
     <div class="card kpi"><span>Na lista</span><b id="d2">0</b><i>Ainda não reatribuídos</i></div>
@@ -511,7 +517,7 @@ body.tem-lemb{--lh:46px;padding-top:var(--lh)}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 const $=s=>document.querySelector(s);
-let SCIC='',DPER=0,DCIC='',CMAP=new Map();
+let SCIC='',DPER=0,DCIC='',CMAP=new Map(),REL=null;
 const PAL=['#0b2a5b','#1f6feb','#00a650','#e53935','#7fb2f7','#8d6e63'];
 let DATA={ret:[],mais:[],mov:[],aud:[],audDup:0}, SRC='nenhuma planilha carregada', AUDSRC='', charts={};
 
@@ -577,7 +583,7 @@ function load(buf,name,kind){kind=kind||'auto';
     if(kind==='desc')throw new Error('não achei a coluna "ID do pacote". Esse arquivo não parece ser do Desconteinerizado.');
     const au=(kind==='auto'||kind==='sis')?parseAud(rd(wb.SheetNames[0])):null;
     if(au){DATA={...DATA,aud:au.rows,audDup:au.dup};AUDSRC=name;refreshFc();render();abaTrocar('sist');return}
-    if(kind==='sis')throw new Error('não achei a coluna SHIPMENT ou ID do envio. Esse arquivo não parece ser a planilha Sistêmica.');
+    if(kind==='sis')throw new Error('não achei a coluna SHIPMENT ou ID do envio. Esse arquivo não parece ser a planilha de Status e Valores.');
     const nm=wb.SheetNames.find(n=>/MOVIMENTA/.test(n.toUpperCase()));
     const mov=nm?parseMov(rd(nm)):[];
     let d;
@@ -591,7 +597,7 @@ function setData(d,src){
   refreshFc();
   render();
 }
-const view=()=>{const c=$('#fc').value,f=a=>c?a.filter(x=>x.ciclo===c):a;const bp=k=>BIP.filter(x=>x.status===k);return{ret:f([...DATA.ret,...bp('Retirado')]),mais:f([...DATA.mais,...bp('À mais')]),falt:f(bp('Faltante')),avar:f(bp('Avaria')),mov:f([...DATA.ret.map(x=>({id:x.id,mov:'Retirado',ciclo:x.ciclo})),...DATA.mais.map(x=>({id:x.id,mov:'À mais',ciclo:x.ciclo})),...(DATA.mov||[]).filter(x=>!DATA.ret.some(y=>y.id===x.id)&&!DATA.mais.some(y=>y.id===x.id)),...BIP.map(x=>({id:x.id,mov:x.status,ciclo:x.ciclo}))]),c}};
+const view=()=>{const c=REL?[...REL].join(' + '):$('#fc').value,f=REL?(REL.size?a=>a.filter(x=>REL.has(x.ciclo)):a=>a):(c?a=>a.filter(x=>x.ciclo===c):a=>a);const bp=k=>BIP.filter(x=>x.status===k);return{ret:f([...DATA.ret,...bp('Retirado')]),mais:f([...DATA.mais,...bp('À mais')]),falt:f(bp('Faltante')),avar:f(bp('Avaria')),mov:f([...DATA.ret.map(x=>({id:x.id,mov:'Retirado',ciclo:x.ciclo})),...DATA.mais.map(x=>({id:x.id,mov:'À mais',ciclo:x.ciclo})),...(DATA.mov||[]).filter(x=>!DATA.ret.some(y=>y.id===x.id)&&!DATA.mais.some(y=>y.id===x.id)),...BIP.map(x=>({id:x.id,mov:x.status,ciclo:x.ciclo}))]),c}};
 
 /* ---------- gráficos ---------- */
 Chart.defaults.font.family='system-ui,-apple-system,"Segoe UI",Arial,sans-serif';
@@ -702,7 +708,8 @@ function cruzar(){
   (DATA.aud||[]).forEach(x=>{const b=B.get(x.id);b?fis.push({...x,st:b.st,resp:b.resp,transp:b.transp,ciclo:b.ciclo,sit:b.st===x.estado?'Confere':'Revisar',res:b.st===x.estado?`Confere: bipado como ${b.st} e a planilha também diz ${x.estado}.`:`Repetido: bipado como ${b.st}, mas a planilha diz ${x.estado}. Confira.`}):sis.push({...x,res:x.estado==='Correto'?'Só na planilha: auditado como Correto, sem bipagem.':`Só na planilha: consta ${x.estado}, mas o ID não foi bipado.`})});
   sis.sort((a,b)=>EO(a)-EO(b));
   const rid=new Set(REAT.map(r=>r.id));
-  return{fis,sis:sis.filter(x=>!rid.has(x.id))};
+  const R=c=>!REL||!REL.size||REL.has(c);
+  return{fis:fis.filter(x=>R(x.ciclo)),sis:sis.filter(x=>!rid.has(x.id)&&R(cicloRota(x.rota)))};
 }
 let CUR={fis:[],sis:[]};
 function tabelaFis(){
@@ -790,10 +797,11 @@ function tbl(d,y,ttl,head,rows,w){
     let x=M+2;r.forEach((c,i)=>{d.text(String(c),x,y+4.2);x+=w[i]});y+=6});
   return y+10;
 }
-function graficosImg(){
-  const pg=$('#pg'),oculto=pg.hidden,o={};if(oculto)pg.hidden=false;
+function graficosImg(ids){
+  ids=ids||['c1','c2','c3','c4'];
+  const pg=$('#'+ids[0]).closest('.pane'),oculto=pg.hidden,o={};if(oculto)pg.hidden=false;
   try{
-    ['c1','c2','c3','c4'].forEach(id=>{
+    ids.forEach(id=>{
       const ch=charts[id],cv=$('#'+id);let u=null;
       try{if(ch){ch.stop&&ch.stop();ch.resize();ch.update('none')}u=cv&&cv.width>0&&cv.height>0?cv.toDataURL('image/png',1):null}catch(e){}
       o[id]=u&&u.length>100?{url:u,w:cv.width,h:cv.height}:null;
@@ -858,6 +866,8 @@ function gerarPDF(sel){
     const Q=visDesc();
     y=tbl(d,y,'Desconteinerizado'+ft('Desconteinerizado')+' - '+Q.length+' ID'+(Q.length===1?'':'s'),['ID do pacote','Estado','Problem solver','Dia','Motivo'],Q.slice(0,LIM).map(x=>[x.id,x.estado,cut(x.solver,26),x.dia,cut(x.motivo,26)]),[34,24,56,18,50]);
     if(Q.length>LIM){d.setFontSize(9);d.setTextColor(90);d.text('Mostrando '+LIM+' de '+Q.length+'. A lista completa está no Excel.',M,y-6)}
+    const RDx=reatdFiltrado();
+    if(RDx.length)tg('Reatribuição'+ft('Desconteinerizado')+' - '+RDx.length+' ID'+(RDx.length===1?'':'s'),['ID do pacote','Estado','Problem solver','Dia','Motivo'],RDx.map(x=>[x.id,x.estado,cut(x.solver,26),x.dia,cut(x.motivo,26)]),[34,24,56,18,50]);
   }
   // rodapé
   const n=d.getNumberOfPages();
@@ -1102,7 +1112,7 @@ $('#bclr').onclick=()=>{
 /* ---------- exportar relatório em Excel ---------- */
 const XHR=['ID','MELI responsável','Motivo','Transportadora','Ciclo','Bipado em'];
 const XHM=['ID','LOG responsável','Transportadora','Ciclo','Bipado em'];
-const BF=()=>{const c=$('#fc').value;return c?BIP.filter(x=>x.ciclo===c):BIP};
+const BF=()=>{if(REL)return REL.size?BIP.filter(x=>REL.has(x.ciclo)):BIP;const c=$('#fc').value;return c?BIP.filter(x=>x.ciclo===c):BIP};
 function excelRows(){
   const ord=(a,b)=>String(a.ciclo).localeCompare(String(b.ciclo))||String(a.at).localeCompare(String(b.at));
   const hora=horaFmt,VM=valMap(),hv=VM.size>0;
@@ -1236,6 +1246,7 @@ function descPer(skipC){
   }
   if(DPER)L=L.filter(x=>noPeriodo(x.dia,DPER));
   if(!skipC&&DCIC)L=L.filter(x=>descCiclo(x)===DCIC);
+  if(!skipC&&REL&&REL.size)L=L.filter(x=>REL.has(descCiclo(x)));
   return L;
 }
 function visDesc(){
@@ -1369,13 +1380,14 @@ function gerarPDFDesc(){
   k.forEach((x,i)=>{const X=M+i*(kw+3);d.setFillColor(242,246,252);d.roundedRect(X,38,kw,20,2,2,'F');
     d.setTextColor(91,107,134);d.setFontSize(7.5);d.text(x[0].toUpperCase(),X+3,44);
     d.setTextColor(11,42,91);d.setFont('helvetica','bold');d.setFontSize(i==4?10:18);d.text(String(x[1]),X+3,53);d.setFont('helvetica','normal')});
-  let y=66;const cw=(W-2*M-6)/2,G=[['c21','Por motivo da exclusão'],['c22','Por problem solver (top 12)'],['c23','Por estado'],['c24','Por dia de criação']];
+  let y=66;const cw=(W-2*M-6)/2,G=[['c21','Por motivo da exclusão'],['c22','Por problem solver (top 12)'],['c23','Por estado'],['c24','Por dia de criação']],IMG=graficosImg(G.map(g=>g[0])),GH=[];
   G.forEach((g,i)=>{
-    const cv=$('#'+g[0]),h=cw*cv.height/cv.width,X=M+(i%2)*(cw+6);
+    const im=IMG[g[0]],h=im?cw*im.h/im.w:24,X=M+(i%2)*(cw+6);
     d.setTextColor(30);d.setFont('helvetica','bold');d.setFontSize(10);d.text(g[1],X,y);
     d.setDrawColor(221,229,241);d.roundedRect(X,y+2,cw,h+2,2,2,'S');
-    d.addImage(cv.toDataURL('image/png',1),'PNG',X+1,y+3,cw-2,h);
-    if(i%2){const p=$('#'+G[i-1][0]);y+=Math.max(h,cw*p.height/p.width)+12}});
+    if(im)d.addImage(im.url,'PNG',X+1,y+3,cw-2,h);
+    else{d.setFont('helvetica','normal');d.setFontSize(9);d.setTextColor(140);d.text('Gráfico indisponível',X+3,y+10)}
+    GH[i]=h;if(i%2)y+=Math.max(GH[i-1],GH[i])+12});
   const p=(a,t)=>t?Math.round(a/t*100):0,Mt=D.Mo[0]||['-',0],n=D.B.length;
   d.setFont('helvetica','bold');d.setFontSize(12);d.setTextColor(11,42,91);d.text('Destaques',M,y);y+=6;
   d.setFont('helvetica','normal');d.setFontSize(10);d.setTextColor(30);
@@ -1402,7 +1414,6 @@ function exportarExcelDesc(){
   if(D.RD.length)XLSX.utils.book_append_sheet(wb,folha(['ID do pacote','Estado','Problem solver','Ciclo','Motivo da exclusão','Criação','Movido em'],D.RD.map(x=>[x.id,x.estado,x.solver,x.cic||'',x.motivo,x.data,horaFmt({at:x.at})]),[16,12,34,10,26,20,20]),'Reatribuição');
   XLSX.writeFile(wb,'relatorio-desconteinerizado-'+new Date().toISOString().slice(0,10)+'.xlsx');
 }
-$('#dpdf').onclick=()=>{if(!DESC.length)return alert('Carregue o arquivo do Desconteinerizado primeiro.');gerarPDFDesc()};
 $('#dxls').onclick=()=>{if(!DESC.length)return alert('Carregue o arquivo do Desconteinerizado primeiro.');exportarExcelDesc()};
 
 function limparTudo(){
@@ -1420,11 +1431,12 @@ function limparTudo(){
   $('#mnl').hidden=true;$('#mnb').setAttribute('aria-expanded','false');
 }
 $('#limpa').onclick=limparTudo;
-function reatdFiltrado(){return REATD.filter(x=>(!DPER||!x.dia||noPeriodo(x.dia,DPER))&&(!DCIC||!x.cic||x.cic===DCIC))}
+function reatdFiltrado(){return REATD.filter(x=>(!DPER||!x.dia||noPeriodo(x.dia,DPER))&&(!DCIC||!x.cic||x.cic===DCIC)&&(!REL||!REL.size||!x.cic||REL.has(x.cic)))}
 function reatFiltrado(){return REAT.filter(x=>!SCIC||cicloRota(x.rota)===SCIC)}
 function filtrosAtivos(){
   const L=[],j=a=>a.filter(Boolean).join(', ');
-  const top=$('#fc').value;
+  const top=REL?'':$('#fc').value;
+  if(REL&&REL.size)L.push(['Ciclos do relatório',[...REL].join(', ')]);
   if(top)L.push(['Ciclo do topo (Retirados, À mais, Faltantes, Avarias)',top]);
   const se=$('#sfe').value,sq=$('#qy').value.trim();
   if(SCIC||se||sq)L.push(['Sistêmica',j([SCIC&&'Ciclo '+SCIC,se&&'Estado '+se,sq&&'Busca "'+sq+'"'])]);
@@ -1448,6 +1460,7 @@ function abaTrocar(t){
   $('#pg').hidden=t!=='geral';$('#pf').hidden=t!=='falt';$('#pa').hidden=t!=='avar';$('#pi').hidden=t!=='inc';$('#pfi').hidden=t!=='fis';$('#psi').hidden=t!=='sist';$('#pd').hidden=t!=='desc';
   document.querySelectorAll('.tb').forEach(b=>{const on=b.dataset.tab===t;b.classList.toggle('on',on);b.setAttribute('aria-selected',on)});
   const an=$('#abanome');if(an)an.textContent=NOMEABA[t]||'';
+  $('#acp').hidden=t==='desc';
   Object.values(charts).forEach(c=>{try{c.resize()}catch(e){}});
 }
 document.querySelectorAll('.tb').forEach(b=>b.onclick=()=>abaTrocar(b.dataset.tab));
@@ -1481,7 +1494,7 @@ $('#file').onchange=e=>{const f=e.target.files[0];if(f)f.arrayBuffer().then(b=>l
 
 /* ---------- janela de escolha de abas ---------- */
 const ABAS=[['geral','Visão geral','Retirados e À mais'],['falt','Faltantes','Bipados como faltante'],['avar','Avarias','Bipados como avaria'],['inc','Inclusão manual','Retirados por inclusão manual'],['fis','Físico','Bipados × planilha Sistêmica'],['sist','Sistêmica','Planilha de auditoria e movimentados'],['desc','Desconteinerizado','Problem solving e Reatribuição']];
-const CARGAS=[['auto','Detectar automaticamente','Recomendado: o Dashboard identifica o tipo pelo cabeçalho'],['main','Visão geral','Planilha de Retirados / À mais'],['sis','Sistêmica e Físico','Planilha de auditoria (SHIPMENT) ou de valor declarado (ID do envio)'],['desc','Desconteinerizado','Arquivo de problem solving (coluna ID do pacote)'],['vagas','Planejamento de vagas','Rota otimizada, doca e transportadora (CSV ou Excel); habilita a busca de rota no topo']];
+const CARGAS=[['auto','Detectar automaticamente','Recomendado: o Dashboard identifica o tipo pelo cabeçalho'],['sis','Status e Valores','Planilha de status das remessas (SHIPMENT) ou de valores declarados (ID do envio)'],['desc','Desconteinerizado','Arquivo de problem solving (coluna ID do pacote)'],['vagas','Planejamento de vagas','Rota otimizada, doca e transportadora (CSV ou Excel); habilita a busca de rota no topo']];
 function contaAba(k){const v=view();return{geral:v.ret.length+v.mais.length,falt:v.falt.length,avar:v.avar.length,inc:inclList(v).length,fis:CUR.fis.length,sist:CUR.sis.length,desc:DESC.length}[k]}
 let SMT='';
 function smAbrir(tipo){
@@ -1495,7 +1508,7 @@ function smAbrir(tipo){
     $('#smt').textContent=x?'Exportar relatório em Excel':'Gerar relatório';$('#smd').textContent='Escolha as abas que entram no relatório (os filtros ativos continuam valendo):';
     o.innerHTML=`<label class="orow all on"><input type="checkbox" id="small" checked><span><b>Todas as abas</b></span><em></em></label>`+ABAS.map(a=>`<label class="orow on"><input type="checkbox" name="sa" value="${a[0]}" checked><span><b>${a[1]}</b><small>${a[2]}</small></span><em>${contaAba(a[0])}</em></label>`).join('')+(x?'':`<label class="orow${BIP.length?' on':''}"><input type="checkbox" id="smxl"${BIP.length?' checked':''}><span><b>Gerar também o Excel</b><small>Baixa junto o Excel com as mesmas abas</small></span><em></em></label>`);
     $('#smn').textContent='';$('#smok').textContent=x?'Exportar Excel':'Gerar PDF';
-    $('#smcic').innerHTML=$('#fc').innerHTML;$('#smcic').value=$('#fc').value;
+    POPC=new Set($('#fc').value?[$('#fc').value]:[]);relChips('#smcic',POPC);
   }
   $('#sm').hidden=false;
 }
@@ -1511,12 +1524,31 @@ function exportaSel(tipo,sel){
   if(tipo==='xls')so?exportarExcelDesc():exportarExcel(sel);else so?gerarPDFDesc():gerarPDF(sel);
 }
 /* ---------- relatório: ciclo e relatório em texto ---------- */
-function comCiclo(ciclo,fn){
-  const prev=$('#fc').value;
-  if(ciclo===prev)return fn();
-  $('#fc').value=ciclo;render();Object.values(charts).forEach(ch=>{try{ch.update('none')}catch(e){}});
-  try{return fn()}finally{$('#fc').value=prev;render()}
+function comCiclo(ciclos,fn){
+  const arr=Array.isArray(ciclos)?ciclos:(ciclos?[ciclos]:[]);
+  const prev=REL,cur=$('#fc').value;
+  if(!prev&&((arr.length===0&&!cur)||(arr.length===1&&arr[0]===cur)))return fn();
+  REL=new Set(arr);
+  const re=()=>{render();if(DESC.length)descRender();Object.values(charts).forEach(ch=>{try{ch.update('none')}catch(e){}})};
+  re();
+  try{return fn()}finally{REL=prev;re()}
 }
+let POPC=new Set(),TXTC=new Set();
+function cicRelLista(){
+  const s=new Set([...$('#fc').options].map(o=>o.value).filter(Boolean));
+  (CUR.sis||[]).forEach(x=>s.add(cicloRota(x.rota)));DESC.forEach(x=>s.add(descCiclo(x)));
+  return [...s].sort((a,b)=>a.localeCompare(b,'pt-BR',{numeric:true}));
+}
+function relChips(sel,set){
+  $(sel).innerHTML=`<button type="button" class="chip" data-rc0="1" aria-pressed="${set.size===0}">Todos os ciclos</button>`+cicRelLista().map(c=>`<button type="button" class="chip" data-rcv="${esc(c)}" aria-pressed="${set.has(c)}">${esc(c)}</button>`).join('');
+}
+function relClick(e,set,sel,after){
+  const b=e.target.closest('[data-rc0],[data-rcv]');if(!b)return;
+  if(b.dataset.rc0)set.clear();else{const v=b.dataset.rcv;set.has(v)?set.delete(v):set.add(v)}
+  relChips(sel,set);if(after)after();
+}
+$('#smcic').addEventListener('click',e=>relClick(e,POPC,'#smcic'));
+$('#wc').addEventListener('click',e=>relClick(e,TXTC,'#wc',waBase));
 function textoRelatorio(ciclo){
   return comCiclo(ciclo,()=>{
     const v=view(),m=valMap(),hv=m.size>0;
@@ -1525,7 +1557,8 @@ function textoRelatorio(ciclo){
     const vo=a=>hv&&a.length-vt(a).sem>0?brt(a):'';
     const todos=[...v.ret,...v.mais,...v.falt,...v.avar];
     const ln=[];
-    ln.push(`*RELATÓRIO OPERACIONAL — ${ciclo?'CICLO '+ciclo:'TODOS OS CICLOS'} (${new Date().toLocaleDateString('pt-BR')})*`,'');
+    const cl=Array.isArray(ciclo)?ciclo:(ciclo?[ciclo]:[]),rot=cl.length?(cl.length>1?'CICLOS ':'CICLO ')+cl.join(' + '):'TODOS OS CICLOS';
+    ln.push(`*RELATÓRIO OPERACIONAL — ${rot} (${new Date().toLocaleDateString('pt-BR')})*`,'');
     ln.push('*1. RESUMO GERAL*');
     ln.push(`- Total de pacotes bipados: ${todos.length} ID${todos.length===1?'':'s'}`+(hv?` (${brl(vt(todos).t)} — ${todos.length-vt(todos).sem} com valor declarado)`:''));
     ln.push(`- Pacotes retirados: ${v.ret.length}`+(hv?brt(v.ret):''));
@@ -1559,21 +1592,21 @@ function textoRelatorio(ciclo){
     if(tr.length)tr.forEach(([k,r,l])=>ln.push(`- ${k}: ${r+l} total (${r} ${r===1?'retirado':'retirados'} | ${l} à mais)`));
     else ln.push('- Sem registros.');
     ln.push('','*7. DESCONTEINERIZADO*');
-    ln.push(DESC.length?`- ${DESC.length} ${pl(DESC.length)} registrados no arquivo carregado.`:'- Sem arquivo carregado nesta aba.');
+    if(DESC.length){const D=descDados();ln.push(`- Desconteinerizados: ${D.B.length} ${pl(D.B.length)} (${D.pend} pendentes)`);ln.push(`- Movidos para reatribuição: ${D.RD.length} ${pl(D.RD.length)}`)}
+    else ln.push('- Sem arquivo carregado nesta aba.');
     return ln.join('\n');
   });
 }
 const wMsg=(m,c)=>{const e=$('#wmsg');e.textContent=m;e.className=c||''};
 function waAbrir(){
-  $('#wc').innerHTML=$('#smcic').innerHTML;$('#wc').value=$('#smcic').value;
+  TXTC=new Set(POPC);relChips('#wc',TXTC);
   smFechar();$('#wm').hidden=false;waBase();
 }
-function waBase(){$('#wt').value=textoRelatorio($('#wc').value);wMsg('Texto montado com os dados do relatório. Revise antes de enviar.')}
+function waBase(){$('#wt').value=textoRelatorio([...TXTC]);wMsg('Texto montado com os dados do relatório. Revise antes de enviar.')}
 $('#smwa').onclick=waAbrir;
 $('#wx').onclick=()=>{$('#wm').hidden=true};
 $('#wm').addEventListener('click',e=>{if(e.target===$('#wm'))$('#wm').hidden=true});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#wm').hidden)$('#wm').hidden=true});
-$('#wc').onchange=waBase;
 $('#wcp').onclick=async()=>{const x=$('#wt').value;try{await navigator.clipboard.writeText(x);wMsg('Texto copiado.','ok')}catch(e){$('#wt').select();document.execCommand('copy');wMsg('Texto copiado.','ok')}};
 $('#wwa').onclick=()=>{const x=$('#wt').value.trim();if(!x){wMsg('Não há texto para enviar.','bad');return}window.open('https://wa.me/?text='+encodeURIComponent(x),'_blank','noopener')};
 $('#smok').onclick=()=>{
@@ -1581,7 +1614,7 @@ $('#smok').onclick=()=>{
   const sel=new Set([...document.querySelectorAll('#smo input[name=sa]:checked')].map(c=>c.value));
   if(!sel.size){$('#smn').textContent='Marque pelo menos uma aba.';return}
   const tambem=SMT==='pdf'&&$('#smxl')&&$('#smxl').checked;
-  const cic=$('#smcic').value,b=$('#smok'),tx=b.textContent;
+  const cic=[...POPC],b=$('#smok'),tx=b.textContent;
   b.disabled=true;b.textContent='Gerando...';$('#smn').textContent='Gerando o relatório, aguarde...';
   setTimeout(()=>{
     try{comCiclo(cic,()=>{exportaSel(SMT,sel);if(tambem)exportaSel('xls',sel)});smFechar()}
@@ -1693,10 +1726,12 @@ vagasCarregar();
 const URGN={alta:'Alta',media:'Média',baixa:'Baixa'},URGO={alta:0,media:1,baixa:2};
 let LEMB=[],LURG='media',LUNDO=null,LUT=null;
 function lembCarregar(){try{const a=JSON.parse(localStorage.getItem('cp_lembretes')||'[]');LEMB=Array.isArray(a)?a.filter(x=>x&&typeof x.nome==='string'&&x.nome.trim()&&URGO[x.urg]!=null&&x.id):[]}catch(e){LEMB=[]}}
+let LBOFF=false;try{LBOFF=localStorage.getItem('cp_lbar_off')==='1'}catch(e){}
+function lbarSet(off){LBOFF=off;try{localStorage.setItem('cp_lbar_off',off?'1':'0')}catch(e){}$('#vres').hidden=true;lembRender()}
 const lembSalvar=()=>{try{localStorage.setItem('cp_lembretes',JSON.stringify(LEMB))}catch(e){}};
 const lembOrd=()=>LEMB.slice().sort((a,b)=>URGO[a.urg]-URGO[b.urg]||(a.criado||0)-(b.criado||0));
 function lembRender(){
-  const o=lembOrd(),bar=$('#lbar'),vis=true;
+  const o=lembOrd(),bar=$('#lbar'),vis=!LBOFF;
   document.body.classList.toggle('tem-lemb',vis);bar.hidden=!vis;$('#vbusca').hidden=false;
   $('#vq').placeholder=VAGAS.length?'Buscar rota (ex.: I10, SD B2)':'Buscar rota (carregue o planejamento)';
   $('#lnotes').innerHTML=`<button type="button" class="lbtn" id="lopen" title="Abrir lembretes">Lembretes (${o.length})</button>`
@@ -1743,6 +1778,8 @@ lembCarregar();lembRender();
 const acao=f=>()=>{gaveta(false);f()};
 $('#acl').onclick=acao(()=>smAbrir('load'));$('#acp').onclick=acao(()=>smAbrir('pdf'));
 $('#acr').onclick=acao(lembAbrir);
+$('#lcol').onclick=()=>lbarSet(true);
+$('#acq').onclick=acao(()=>{lbarSet(false);setTimeout(()=>{const q=$('#vq');q.focus();q.scrollIntoView({block:'nearest',inline:'nearest'})},0)});
 $('#acm').onclick=acao(()=>window.open('https://logdevz.github.io/KN-MESCLA/','_blank','noopener'));
 $('#smlimpa').onclick=()=>{smFechar();limparTudo()};
 </script>
