@@ -59,6 +59,8 @@ tr:nth-child(even) td{background:#f5f9ff}
 .pv{margin-bottom:12px}
 .pv .tw{max-height:260px}
 .x{border:0;background:transparent;color:#e53935;font-size:1.1rem;cursor:pointer;line-height:1;padding:2px 6px}
+.x.ed{color:var(--acc)}
+tr.editando td{background:#dbe9fd}
 .mf{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
 .mn{position:relative}
 .mnl{position:absolute;right:0;top:calc(100% + 8px);background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.22);min-width:250px;padding:6px;z-index:40;display:flex;flex-direction:column;gap:2px}
@@ -164,6 +166,23 @@ body.tem-lemb{--lh:46px;padding-top:var(--lh)}
 .tabs{top:var(--lh)}
 #lbar{position:fixed;top:0;left:0;right:0;height:46px;z-index:90;display:flex;align-items:center;gap:10px;padding:0 12px;background:#eaf2fe;border-bottom:1px solid #c8d9f2;overflow-x:auto;white-space:nowrap}
 #lbar[hidden]{display:none}
+#lnotes{display:contents}
+#vbusca{flex:none;display:flex;align-items:center;gap:8px}
+#vbusca[hidden]{display:none}
+#vq{width:260px;font:inherit;font-size:.85rem;padding:6px 10px;border-radius:8px;border:1px solid #c8d9f2;background:#fff;color:var(--ink)}
+#vmsg{font-size:.78rem;color:#00864a;font-weight:700}
+#vres{position:fixed;z-index:95;width:min(520px,calc(100vw - 16px));max-height:70vh;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 34px rgba(8,24,52,.3);padding:8px;white-space:normal}
+#vres[hidden]{display:none}
+.vr{padding:10px 12px;border:1px solid var(--line);border-left:5px solid var(--acc);border-radius:10px;margin-bottom:8px}
+.vr .vt{display:flex;align-items:center;gap:8px;font-size:1.1rem}
+.vr .vc{font-size:.7rem;font-weight:800;color:var(--acc);background:#e8f0fb;border-radius:999px;padding:2px 8px}
+.vr .vf{display:grid;grid-template-columns:90px 1fr;gap:4px 12px;margin:8px 0 6px}
+.vr .vf small{display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--mut)}
+.vr .vf b{font-size:1.1rem}
+.vr .vs{font-size:.78rem;color:var(--mut)}
+#vres .vn{padding:8px 4px;color:var(--mut);font-size:.9rem}
+#vres .vfoot{font-size:.76rem;color:var(--mut);padding:2px 4px 0}
+#vres .vfoot button{font:inherit;font-size:.76rem;color:var(--acc);background:none;border:0;cursor:pointer;text-decoration:underline;padding:0 0 0 6px}
 #lbar .lbtn{flex:none;font:inherit;font-size:.8rem;font-weight:700;color:var(--pri);background:#fff;border:1px solid #c8d9f2;border-radius:8px;padding:6px 10px;cursor:pointer}
 #lbar .lbtn:hover{background:#e8f0fb}
 .pit{flex:none;display:flex;align-items:center;gap:8px;height:32px;padding:0 6px 0 10px;border-radius:3px 3px 3px 14px;border-left:5px solid;color:var(--ink);font-size:.85rem;box-shadow:0 2px 5px rgba(8,24,52,.22)}
@@ -181,7 +200,11 @@ body.tem-lemb{--lh:46px;padding-top:var(--lh)}
 </style>
 </head>
 <body>
-<div id="lbar" hidden role="region" aria-label="Lembretes ativos"></div>
+<div id="lbar" hidden role="region" aria-label="Barra superior">
+ <div id="vbusca" hidden><input type="search" id="vq" placeholder="Buscar rota (ex.: I10, SD B2)" autocomplete="off" aria-label="Buscar rota no planejamento de vagas"><span id="vmsg" role="status"></span></div>
+ <div id="lnotes"></div>
+</div>
+<div id="vres" hidden role="region" aria-label="Resultado da busca de rota"></div>
 <div class="ov" id="lm" hidden role="dialog" aria-modal="true" aria-labelledby="lmt" style="z-index:85">
  <div class="md" style="max-width:560px">
   <div class="mh"><h2 id="lmt">Lembretes</h2><button class="btn" id="lmx" type="button">Fechar</button></div>
@@ -471,7 +494,7 @@ body.tem-lemb{--lh:46px;padding-top:var(--lh)}
     <div class="addn" id="bnrt" hidden><input type="text" id="bnt" placeholder="Nome da nova transportadora" autocomplete="off" aria-label="Nome da nova transportadora"><button class="btn p" id="bst" type="button">Salvar transportadora</button></div></div>
   </div>
   <datalist id="brl"></datalist><datalist id="bcl"></datalist><datalist id="btl"></datalist>
-  <div class="sc"><input type="text" id="bid" placeholder="Bipe ou cole o ID e aperte Enter" inputmode="numeric" autocomplete="off"><button class="btn p" id="ba">Adicionar</button></div>
+  <div class="sc"><input type="text" id="bid" placeholder="Bipe ou cole o ID e aperte Enter" inputmode="numeric" autocomplete="off"><button class="btn p" id="ba">Adicionar</button><button class="btn" id="bcan" type="button" hidden>Cancelar edição</button></div>
   <p id="bmsg" role="status"></p>
   <section class="grid pv">
     <div class="card"><h2>Retirados (<span id="bn1">0</span>)</h2><div class="tw"><table><thead><tr><th>ID</th><th>MELI responsável</th><th>Transportadora</th><th>Ciclo</th><th></th></tr></thead><tbody id="bt1"></tbody></table></div></div>
@@ -531,9 +554,24 @@ function parseMov(rows){
   }
   return o;
 }
+function parseVagas(rows){
+  for(let i=0;i<Math.min(rows.length,12);i++){
+    const h=rows[i].map(nzv),ix=n=>h.indexOf(nzv(n));
+    const ro=ix('Rota otimizada'),dc=ix('Doca'),tr=ix('Transportadora');
+    if(ro<0||dc<0||tr<0)continue;
+    const og=ix('Rota original'),pl=ix('Placa'),on=ix('Onda'),id=ix('ID da Rota'),g=(r,k)=>k>=0?String(r[k]??'').trim():'';
+    const lin=[];
+    for(let j=i+1;j<rows.length;j++){const r=rows[j],rota=g(r,ro);if(rota)lin.push({rota,orig:g(r,og),doca:g(r,dc),transp:g(r,tr),placa:g(r,pl),onda:g(r,on),idr:g(r,id)})}
+    return lin.length?lin:null;
+  }
+  return null;
+}
 function load(buf,name,kind){kind=kind||'auto';
   try{const wb=/\.csv$/i.test(name||'')?XLSX.read(new TextDecoder('utf-8').decode(buf),{type:'string',raw:true}):XLSX.read(buf,{type:'array'});
     const rd=n=>XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,defval:''});
+    const vg=(kind==='auto'||kind==='vagas')?parseVagas(rd(wb.SheetNames[0])):null;
+    if(vg){carregarVagas(vg,name);return}
+    if(kind==='vagas')throw new Error('não achei as colunas Rota otimizada, Doca e Transportadora. Esse arquivo não parece ser o Planejamento de vagas.');
     const dd=(kind==='auto'||kind==='desc')?parseDesc(rd(wb.SheetNames[0])):null;
     if(dd){carregarDesc(buf,name);return}
     if(kind==='desc')throw new Error('não achei a coluna "ID do pacote". Esse arquivo não parece ser do Desconteinerizado.');
@@ -869,7 +907,7 @@ const trTodos=()=>[...new Set([...TRANSP_PRE,...TR_EXTRA])];
 const CIC_PRE=['AM','PM','SD'];
 let CIC_EXTRA=[];
 try{const a=JSON.parse(localStorage.getItem('cp_ciclos')||'[]');if(Array.isArray(a))CIC_EXTRA=a.filter(x=>typeof x==='string'&&x.trim())}catch(e){CIC_EXTRA=[]}
-const saveCic=()=>{try{localStorage.setItem('cp_ciclos',JSON.stringify(CIC_EXTRA))}catch(e){}};
+const saveCic=()=>{try{localStorage.setItem('cp_ciclos',JSON.stringify(CIC_EXTRA))}catch(e){}const antes=$('#fc').value;refreshFc();if($('#fc').value!==antes)render()};
 const cicTodos=()=>[...CIC_PRE,...CIC_EXTRA];
 const igual=(a,b)=>String(a||'').trim().toLowerCase()===String(b||'').trim().toLowerCase();
 function bipChips(){
@@ -947,10 +985,49 @@ $('#bna').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();
 $('#bnc').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();cicSalvar()}});
 $('#bnn').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();meliSalvar()}});
 $('#br').addEventListener('input',bipChips);$('#bca').addEventListener('input',bipChips);$('#bmot').addEventListener('change',bipChips);$('#bc').addEventListener('input',bipChips);$('#bt').addEventListener('input',bipChips);
+let BEDIT=null;
+function bipEditar(id){
+  const x=BIP.find(b=>b.id===id);if(!x)return;
+  if(!BEDIT)BEDIT={prev:{s:$('#bs').value,r:$('#br').value,t:$('#bt').value,c:$('#bc').value,a:$('#bca').value,m:$('#bmot').value}};
+  BEDIT.id=id;
+  $('#bs').value=x.status;bipTitulo();bipLabels();
+  $('#br').value=x.resp&&x.resp!=='Não informado'?x.resp:'';
+  $('#bt').value=x.transp&&x.transp!==NI?x.transp:'';
+  $('#bc').value=x.ciclo&&x.ciclo!=='Sem ciclo'?x.ciclo:'';
+  $('#bca').value=x.cicloAlvo||'';
+  if(x.status==='Retirado'){
+    const mo=x.motivo||'';
+    if(mo&&![...$('#bmot').options].some(o=>o.value===mo||o.textContent===mo)){const op=document.createElement('option');op.textContent=mo;op.dataset.tmp='1';$('#bmot').appendChild(op)}
+    $('#bmot').value=mo||$('#bmot').options[0].value;
+  }
+  $('#bid').value=id;$('#ba').textContent='Salvar alteração';$('#bcan').hidden=false;
+  bipChips();bipLista();
+  bipMsg('Editando o ID '+id+'. Altere o que precisar e clique em "Salvar alteração".');
+  $('#bid').focus();
+}
+function bipEditFim(){
+  if(!BEDIT)return;
+  const p=BEDIT.prev;BEDIT=null;
+  $('#bmot').querySelectorAll('option[data-tmp]').forEach(o=>o.remove());
+  $('#bs').value=p.s;$('#br').value=p.r;$('#bt').value=p.t;$('#bc').value=p.c;$('#bca').value=p.a;$('#bmot').value=p.m;
+  $('#bid').value='';$('#ba').textContent='Adicionar';$('#bcan').hidden=true;
+  bipTitulo();bipLabels();bipLista();
+}
+function bipSalvarEdicao(){
+  const ids=bipIds($('#bid').value);
+  if(ids.length!==1){bipMsg('Na edição, informe um único ID (8 dígitos ou mais).','bad');return}
+  const nid=ids[0],x=BIP.find(b=>b.id===BEDIT.id);
+  if(!x){bipEditFim();return}
+  if(nid!==x.id&&[...baseAll(),...BIP].some(b=>b.id===nid)){bipMsg('O ID '+nid+' já existe no Dashboard.','bad');return}
+  const st=$('#bs').value,inc=st==='Retirado'&&canonMot($('#bmot').value)===INCL,cr=String($('#bc').value).trim().toUpperCase(),ca=String($('#bca').value).trim().toUpperCase();
+  if(inc&&(!cr||!ca)){bipMsg('Inclusão manual: informe o ciclo de retirada e o ciclo alvo.','bad');(!cr?$('#bc'):$('#bca')).focus();return}
+  Object.assign(x,{id:nid,status:st,resp:nome($('#br').value),transp:canonTr($('#bt').value),ciclo:cr||'Sem ciclo',cicloAlvo:inc?ca:'',motivo:st==='Retirado'?(canonMot($('#bmot').value)||'Não informado'):''});
+  bipEditFim();bipAplicar();bipMsg('ID '+nid+' atualizado.','ok');$('#bid').focus();
+}
 function bipLista(){
   const R=BIP.filter(x=>x.status==='Retirado'),L=BIP.filter(x=>x.status==='À mais'),F=BIP.filter(x=>x.status==='Faltante'),A=BIP.filter(x=>x.status==='Avaria');
   $('#bn1').textContent=R.length;$('#bn2').textContent=L.length;$('#bn3').textContent=F.length;$('#bn4').textContent=A.length;
-  const row=x=>`<tr><td>${x.id}</td><td>${esc(x.resp)}</td><td>${esc(x.transp)}</td><td>${esc(x.ciclo)}${x.cicloAlvo?' → '+esc(x.cicloAlvo):''}</td><td><button class="x" data-id="${x.id}" title="Remover" aria-label="Remover ${x.id}">×</button></td></tr>`;
+  const row=x=>`<tr${BEDIT&&BEDIT.id===x.id?' class="editando"':''}><td>${x.id}</td><td>${esc(x.resp)}</td><td>${esc(x.transp)}</td><td>${esc(x.ciclo)}${x.cicloAlvo?' → '+esc(x.cicloAlvo):''}</td><td style="white-space:nowrap"><button class="x ed" data-ed="${x.id}" title="Editar" aria-label="Editar ${x.id}">✎</button><button class="x" data-id="${x.id}" title="Remover" aria-label="Remover ${x.id}">×</button></td></tr>`;
   $('#bt1').innerHTML=R.slice().reverse().map(row).join('')||'<tr><td colspan="5">Nenhum ID bipado</td></tr>';
   $('#bt2').innerHTML=L.slice().reverse().map(row).join('')||'<tr><td colspan="5">Nenhum ID bipado</td></tr>';
   $('#bt3').innerHTML=F.slice().reverse().map(row).join('')||'<tr><td colspan="5">Nenhum ID bipado</td></tr>';
@@ -968,6 +1045,7 @@ function bipIds(raw){
   return[...new Set(o)];
 }
 function bipAdd(){
+  if(BEDIT){bipSalvarEdicao();return}
   const ids=bipIds($('#bid').value);
   if(!ids.length){bipMsg('Digite ou bipe um ID válido (8 dígitos ou mais).','bad');return}
   const st=$('#bs').value,ex=new Map([...baseAll(),...BIP].map(x=>[x.id,x]));
@@ -989,7 +1067,7 @@ function bipAbrir(s){
   if(s)$('#bs').value=s;
   bipTitulo();
   $('#bm').hidden=false;bipLabels();bipLista();bipMsg('');setTimeout(()=>$('#bid').focus(),0)}
-function bipFechar(){$('#bm').hidden=true;$('#mnb').focus()}
+function bipFechar(){bipEditFim();$('#bm').hidden=true;$('#mnb').focus()}
 let clrT;
 $('#bip').onclick=()=>bipAbrir();
 $('#bfa2').onclick=()=>bipAbrir('Faltante');
@@ -1001,9 +1079,12 @@ $('#bid').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();bipAdd()}};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#bm').hidden)bipFechar()});
 $('#bm').addEventListener('click',e=>{
   if(e.target===$('#bm'))bipFechar();
+  const ed=e.target.closest&&e.target.closest('[data-ed]');
+  if(ed){bipEditar(ed.dataset.ed);return}
   const id=e.target.dataset&&e.target.dataset.id;
-  if(id){BIP=BIP.filter(x=>x.id!==id);bipAplicar();bipMsg('ID '+id+' removido.')}
+  if(id){if(BEDIT&&BEDIT.id===id)bipEditFim();BIP=BIP.filter(x=>x.id!==id);bipAplicar();bipMsg('ID '+id+' removido.')}
 });
+$('#bcan').onclick=()=>{bipEditFim();bipMsg('Edição cancelada.')};
 $('#t5').addEventListener('click',e=>{
   const id=e.target.dataset&&e.target.dataset.id;
   if(id&&confirm('Remover o faltante '+id+'?')){BIP=BIP.filter(x=>x.id!==id);bipAplicar()}
@@ -1400,7 +1481,7 @@ $('#file').onchange=e=>{const f=e.target.files[0];if(f)f.arrayBuffer().then(b=>l
 
 /* ---------- janela de escolha de abas ---------- */
 const ABAS=[['geral','Visão geral','Retirados e À mais'],['falt','Faltantes','Bipados como faltante'],['avar','Avarias','Bipados como avaria'],['inc','Inclusão manual','Retirados por inclusão manual'],['fis','Físico','Bipados × planilha Sistêmica'],['sist','Sistêmica','Planilha de auditoria e movimentados'],['desc','Desconteinerizado','Problem solving e Reatribuição']];
-const CARGAS=[['auto','Detectar automaticamente','Recomendado: o Dashboard identifica o tipo pelo cabeçalho'],['main','Visão geral','Planilha de Retirados / À mais'],['sis','Sistêmica e Físico','Planilha de auditoria (SHIPMENT) ou de valor declarado (ID do envio)'],['desc','Desconteinerizado','Arquivo de problem solving (coluna ID do pacote)']];
+const CARGAS=[['auto','Detectar automaticamente','Recomendado: o Dashboard identifica o tipo pelo cabeçalho'],['main','Visão geral','Planilha de Retirados / À mais'],['sis','Sistêmica e Físico','Planilha de auditoria (SHIPMENT) ou de valor declarado (ID do envio)'],['desc','Desconteinerizado','Arquivo de problem solving (coluna ID do pacote)'],['vagas','Planejamento de vagas','Rota otimizada, doca e transportadora (CSV ou Excel); habilita a busca de rota no topo']];
 function contaAba(k){const v=view();return{geral:v.ret.length+v.mais.length,falt:v.falt.length,avar:v.avar.length,inc:inclList(v).length,fis:CUR.fis.length,sist:CUR.sis.length,desc:DESC.length}[k]}
 let SMT='';
 function smAbrir(tipo){
@@ -1512,6 +1593,102 @@ $('#fsel').onchange=e=>{const f=e.target.files[0],k=e.target.dataset.k||'auto';i
 $('#smx').onclick=$('#smc').onclick=smFechar;
 $('#sm').addEventListener('click',e=>{if(e.target===$('#sm'))smFechar()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sm').hidden)smFechar()});
+/* ---------- planejamento de vagas: busca de rota ---------- */
+let VAGAS=[];
+const nzv=s=>String(s??'').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9]/g,'');
+const semZ=s=>String(s).replace(/^([A-Z]+)0+(?=\d)/,'$1');
+function vagaIdx(r){
+  const core=String(r.rota||'').replace(/[\s_-]*(AM|PM|SD)\s*$/i,''),core2=String(r.orig||'').replace(/^\s*(AM|PM|SD)[\s_-]*/i,'');
+  r.k1=nzv(r.rota);r.k2=nzv(r.orig);r.c1=semZ(nzv(core));r.c2=semZ(nzv(core2));
+  r.n1=r.c1.replace(/^[A-Z]+/,'');r.n2=r.c2.replace(/^[A-Z]+/,'');
+  r.kid=String(r.idr||'').replace(/\D/g,'');r.kp=nzv(r.placa);r.kt=nzv(r.transp);r.kd=nzv(r.doca);
+  return r;
+}
+function vagasCarregar(){
+  try{const a=JSON.parse(localStorage.getItem('cp_vagas')||'[]');VAGAS=Array.isArray(a)?a.filter(x=>x&&Array.isArray(x.linhas)).map(x=>({...x,linhas:x.linhas.map(r=>vagaIdx({...r}))})):[]}catch(e){VAGAS=[]}
+}
+function vagasSalvar(){
+  try{localStorage.setItem('cp_vagas',JSON.stringify(VAGAS.map(x=>({nome:x.nome,ciclo:x.ciclo,data:x.data,linhas:x.linhas.map(r=>({rota:r.rota,orig:r.orig,doca:r.doca,transp:r.transp,placa:r.placa,onda:r.onda,idr:r.idr}))}))))}catch(e){}
+}
+let VMT=null;
+function vagaMsg(m){$('#vmsg').textContent=m;clearTimeout(VMT);VMT=setTimeout(()=>{$('#vmsg').textContent=''},7000)}
+function carregarVagas(lin,name){
+  const m=String(name||'').match(/(?:^|[_\-\s.])(AM|PM|SD)(?=[_\-\s.]|$)/i),cic=m?m[1].toUpperCase():'';
+  const d=String(name||'').match(/(20\d{2})(\d{2})(\d{2})/),data=d?`${d[3]}/${d[2]}/${d[1]}`:'';
+  VAGAS=VAGAS.filter(x=>cic?x.ciclo!==cic:x.nome!==name);
+  VAGAS.push({nome:name,ciclo:cic,data,linhas:lin.map(r=>vagaIdx({...r}))});
+  vagasSalvar();lembRender();
+  vagaMsg('Planejamento'+(cic?' '+cic:'')+' carregado: '+lin.length+' rotas.');
+  setTimeout(()=>$('#vq').focus(),0);
+}
+function lev(a,b){
+  if(Math.abs(a.length-b.length)>1)return 9;
+  const m=a.length,n=b.length,d=Array.from({length:m+1},(_,i)=>[i,...Array(n).fill(0)]);
+  for(let j=1;j<=n;j++)d[0][j]=j;
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  return d[m][n];
+}
+/* Reconhece padrões: "I10", "i 10", "I-10", "i010", "I10_SD", "SD B2", "sd_b2", ID da rota (inteiro ou final),
+   placa, transportadora; tolera 1 erro de digitação. */
+function vagaBusca(q){
+  const qn=nzv(q);if(!qn)return[];
+  const mm=String(q).toUpperCase().match(/([A-Z]+)\s*[-_.\s]*0*(\d+)/),sl=mm?semZ(mm[1]+mm[2]):'';
+  const so=/^\d+$/.test(qn),qz=qn.replace(/^0+/,''),pref=/^(AM|PM|SD)[A-Z]+\d/.test(qn),res=[];
+  VAGAS.forEach(f=>f.linhas.forEach(r=>{
+    let s=0;
+    if(qn===r.k1||qn===r.k2)s=100;
+    else if(sl&&sl===r.c1)s=pref?90:97;
+    else if(sl&&sl===r.c2)s=pref?98:90;
+    else if(so&&r.kid&&qn===r.kid)s=100;
+    else if(so&&r.kid&&qn.length>=4&&r.kid.endsWith(qn))s=85;
+    else if(so&&qn.length<=3&&qz&&(r.n1===qz||r.n2===qz))s=60;
+    else if(qn.length>=2&&(r.k1.startsWith(qn)||r.k2.startsWith(qn)||r.c1.startsWith(qn)))s=70;
+    else if(qn.length>=3&&(r.k1.includes(qn)||r.k2.includes(qn)))s=50;
+    else if(qn.length>=3&&r.kp.includes(qn))s=45;
+    else if(so&&qn.length<=3&&r.kd===qn)s=40;
+    else if(qn.length>=3&&!so&&(lev(qn,r.k1)<=1||lev(qn,r.k2)<=1||(r.c1.length>=3&&lev(qn,r.c1)<=1)))s=38;
+    else if(qn.length>=3&&r.kt.includes(qn))s=30;
+    if(s)res.push({s,r,f});
+  }));
+  res.sort((a,b)=>b.s-a.s||a.r.rota.localeCompare(b.r.rota,'pt-BR',{numeric:true}));
+  if(!res.length)return res;
+  const best=res[0].s,lim=best>=95?95:best>=70?best-25:0;
+  res.main=res.filter(x=>x.s>=lim);
+  res.alt=best>=95?res.filter(x=>x.s>=90&&x.s<95).slice(0,3):[];
+  return res;
+}
+function vagaRender(){
+  const q=$('#vq').value,box=$('#vres');
+  if(!VAGAS.length){
+    const r=$('#vq').getBoundingClientRect(),w=Math.min(520,innerWidth-16);
+    box.style.left=Math.max(8,Math.min(r.left,innerWidth-w-8))+'px';box.style.top=(r.bottom+6)+'px';
+    box.innerHTML='<div class="vn">Nenhum planejamento de vagas carregado. Carregue o arquivo para buscar rota, doca e transportadora.</div><div style="padding:0 4px 4px"><button class="btn p" id="vcarga" type="button">Carregar planejamento de vagas</button></div>';
+    box.hidden=false;return;
+  }
+  if(!q.trim()){box.hidden=true;return}
+  const bus=vagaBusca(q),all=bus.main||[],alt=bus.alt||[],sh=all.slice(0,8);
+  const rect=$('#vq').getBoundingClientRect(),w=Math.min(520,innerWidth-16);
+  box.style.left=Math.max(8,Math.min(rect.left,innerWidth-w-8))+'px';box.style.top=(rect.bottom+6)+'px';
+  const card=({r,f})=>`<div class="vr"><div class="vt"><b>${esc(r.rota)}</b>${f.ciclo?`<span class="vc">${esc(f.ciclo)}</span>`:''}</div><div class="vf"><div><small>Doca</small><b>${esc(r.doca||'-')}</b></div><div><small>Transportadora</small><b>${esc(r.transp||'-')}</b></div></div><div class="vs">Rota original ${esc(r.orig||'-')}${r.placa?' · Placa '+esc(r.placa):''}${r.onda?' · '+esc(r.onda):''}</div></div>`;
+  box.innerHTML=(sh.map(card).join('')
+    ||`<div class="vn">Nenhuma rota encontrada para "${esc(q.trim())}". Tente só a letra e o número (ex.: I10) ou parte do ID da rota.</div>`)
+    +(all.length>sh.length?`<div class="vn">Mostrando ${sh.length} de ${all.length} resultados. Refine a busca para ver os demais.</div>`:'')
+    +(alt.length?`<div class="vn">Também aparece como rota original:</div>`+alt.map(card).join(''):'')
+    +`<div class="vfoot">`+VAGAS.map((f,i)=>`${esc(f.ciclo||f.nome)}${f.data?' · '+esc(f.data):''} · ${f.linhas.length} rotas<button type="button" data-vrm="${i}">Remover</button>`).join(' &nbsp;|&nbsp; ')+`</div>`;
+  box.hidden=false;
+}
+$('#vq').addEventListener('input',vagaRender);
+$('#vq').addEventListener('focus',vagaRender);
+$('#vq').addEventListener('keydown',e=>{if(e.key==='Escape'){$('#vq').value='';$('#vres').hidden=true}});
+$('#vres').addEventListener('click',e=>{
+  if(e.target.closest('#vcarga')){$('#vres').hidden=true;smAbrir('load');const r=document.querySelector('#smo input[value="vagas"]');if(r)r.click();return}
+  const b=e.target.closest('[data-vrm]');if(!b)return;
+  const f=VAGAS[+b.dataset.vrm];
+  if(f&&confirm('Remover o planejamento '+(f.ciclo||f.nome)+'?')){VAGAS.splice(+b.dataset.vrm,1);vagasSalvar();lembRender();vagaRender()}
+});
+document.addEventListener('click',e=>{if(!e.target.closest('#vres')&&!e.target.closest('#vbusca'))$('#vres').hidden=true});
+window.addEventListener('resize',()=>{if(!$('#vres').hidden)vagaRender()});
+vagasCarregar();
 /* ---------- lembretes ---------- */
 const URGN={alta:'Alta',media:'Média',baixa:'Baixa'},URGO={alta:0,media:1,baixa:2};
 let LEMB=[],LURG='media',LUNDO=null,LUT=null;
@@ -1519,9 +1696,10 @@ function lembCarregar(){try{const a=JSON.parse(localStorage.getItem('cp_lembrete
 const lembSalvar=()=>{try{localStorage.setItem('cp_lembretes',JSON.stringify(LEMB))}catch(e){}};
 const lembOrd=()=>LEMB.slice().sort((a,b)=>URGO[a.urg]-URGO[b.urg]||(a.criado||0)-(b.criado||0));
 function lembRender(){
-  const o=lembOrd(),bar=$('#lbar'),vis=o.length>0||!!LUNDO;
-  document.body.classList.toggle('tem-lemb',vis);bar.hidden=!vis;
-  bar.innerHTML=`<button type="button" class="lbtn" id="lopen" title="Abrir lembretes">Lembretes (${o.length})</button>`
+  const o=lembOrd(),bar=$('#lbar'),vis=true;
+  document.body.classList.toggle('tem-lemb',vis);bar.hidden=!vis;$('#vbusca').hidden=false;
+  $('#vq').placeholder=VAGAS.length?'Buscar rota (ex.: I10, SD B2)':'Buscar rota (carregue o planejamento)';
+  $('#lnotes').innerHTML=`<button type="button" class="lbtn" id="lopen" title="Abrir lembretes">Lembretes (${o.length})</button>`
     +o.map(x=>`<div class="pit ${x.urg}" role="group" aria-label="Lembrete de urgência ${URGN[x.urg]}: ${esc(x.nome)}"><b class="lu">${URGN[x.urg]}</b><span class="ln" title="${esc(x.nome)}">${esc(x.nome)}</span><button type="button" class="lok" data-lc="${esc(x.id)}" aria-label="Concluir o lembrete ${esc(x.nome)}">✓ Concluir</button></div>`).join('')
     +(LUNDO?`<div class="lun">Concluído: ${esc(LUNDO.nome)} <button type="button" id="lundo">Desfazer</button></div>`:'');
   $('#alc').textContent=o.length||'›';
